@@ -1,0 +1,11 @@
+{
+	"name": "internet", 
+	"version": "0.1.0",
+	"main": "./dist/internet.js",
+	"ignore": [
+		"./src/**",
+		"node_modules",
+		"Gruntfile.js",
+		"package.json"
+	]
+}
