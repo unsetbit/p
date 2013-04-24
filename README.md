@@ -6,6 +6,7 @@ channel to establish the connections.
 # Trying the example
 
 Prerequisites:
+
 1. Node 0.10+
 2. Chrome 26+
 3. grunt-cli (`npm install grunt-cli -g`)
@@ -13,6 +14,7 @@ Prerequisites:
 5. onramp (`npm install onramp -g`)
 
 Running the example
+
 1. Clone this repo (`git clone https://github.com/oztu/anarch`)
 2. Go in to the directory (`cd anarch`)
 3. Start the dev server (`grunt dev`)
