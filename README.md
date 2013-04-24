@@ -29,7 +29,7 @@ Running the example
 You should now see "Got: Ping?" and "Got: Pong!" in alternating order. This means your browser was able to establish an
 RTC connection to itself through onramp. You can now shut down onramp and your connection will still persist.
 
-Take a look at [ping.js](https://raw.github.com/oztu/anarch/master/examples/ping-pong/ping.js) 
-and [pong.js](https://raw.github.com/oztu/anarch/master/examples/ping-pong/pong.js), along with 
-[onramp](https://raw.github.com/oztu/onramp/master/bin/onramp) to see how everything is wired up.
+Take a look at [ping.js](https://github.com/oztu/anarch/blob/master/examples/ping-pong/ping.js) 
+and [pong.js](https://github.com/oztu/anarch/blob/master/examples/ping-pong/pong.js), along with 
+[onramp](https://github.com/oztu/onramp/blob/master/bin/onramp) to see how everything is wired up.
 
