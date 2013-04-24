@@ -1,7 +1,7 @@
 var pingingAnarch = Anarch.create();
 
 // Greeter greets connects to and greets every address the websocket sends it
-var webSocketConnection = pingingAnarch.to('ws://192.168.0.101:20500/');
+var webSocketConnection = pingingAnarch.to('ws://127.0.0.1:20500/');
 
 webSocketConnection.on('message', function(message){
 	if(message === "remote address"){
