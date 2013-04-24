@@ -27,7 +27,8 @@ Running the example
 7. Open up your dev console
 
 You should now see "Got: Ping?" and "Got: Pong!" in alternating order. This means your browser was able to establish an
-RTC connection to itself through onramp. You can now shut down onramp and your connection will still persist.
+RTC connection to itself through onramp. You can now shut down onramp and your connection between the two browsers
+(the same one, in this case) will still persist.
 
 Take a look at [ping.js](https://github.com/oztu/anarch/blob/master/examples/ping-pong/ping.js) 
 and [pong.js](https://github.com/oztu/anarch/blob/master/examples/ping-pong/pong.js), along with 
