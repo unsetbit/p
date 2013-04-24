@@ -3,6 +3,9 @@
 Anarch allows you to connect one browser to another. It uses [onramp](https://github.com/oztu/onramp) as the signaling
 channel to establish the connections.
 
+Anarch relies on very young technology -- [WebRTC](http://www.webrtc.org/). Currently, only Chrome has the 
+ability to establish the P2P data channels between browsers that anarch uses.
+
 ## Trying the example
 
 Prerequisites:
