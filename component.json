@@ -9,6 +9,6 @@
 		"package.json"
 	],
 	"dependencies": {
-		"emitter": "~1.0.0"
+		"component/emitter": "~1.0.0"
 	}
 }
