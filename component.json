@@ -1,5 +1,5 @@
 {
-	"name": "internet", 
+	"name": "anarch", 
 	"version": "0.1.0",
 	"main": "./dist/internet.js",
 	"ignore": [
@@ -7,5 +7,8 @@
 		"node_modules",
 		"Gruntfile.js",
 		"package.json"
-	]
+	],
+	"dependencies": {
+		"emitter": "~1.0.0"
+	},
 }
