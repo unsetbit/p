@@ -3,7 +3,7 @@
 Anarch allows you to connect one browser to another. It uses [onramp](https://github.com/oztu/onramp) as the signaling
 channel to establish the connections.
 
-# Trying the example
+## Trying the example
 
 Prerequisites:
 
