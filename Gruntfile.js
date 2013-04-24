@@ -42,8 +42,9 @@ module.exports = function(grunt) {
             dest: '<%= properties.devServerDir %>/anarch.js',
             src: '<%= hug.anarch.dest %>'
         },{
-            dest: '<%= properties.devServerDir %>/index.html',
-            src: '<%= properties.devDir %>/index.html'
+            dest: '<%= properties.devServerDir %>',
+            src: 'examples/**',
+            expand: true
         }
         ]
       }
@@ -51,7 +52,7 @@ module.exports = function(grunt) {
 
     watch: {
       anarch: {
-        files: ['<%= properties.libDir %>/**'],
+        files: ['<%= properties.libDir %>/**', 'examples/**'],
         tasks: ["hug:anarch", "copy:anarchDev"]
       }
     },
