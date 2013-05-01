@@ -29,18 +29,18 @@ module.exports = function(grunt) {
     },
     
     hug: {
-      anarch:{
+      p:{
         src: ["<%= properties.libDir %>/**"],
-        dest: "<%= properties.buildDir %>/anarch.max.js",
+        dest: "<%= properties.buildDir %>/p.max.js",
         path: ["./components"]
       }
     },
     
     copy: {
-      anarchDev:{
+      pDev:{
         files: [{
-            dest: '<%= properties.devServerDir %>/anarch.js',
-            src: '<%= hug.anarch.dest %>'
+            dest: '<%= properties.devServerDir %>/p.js',
+            src: '<%= hug.p.dest %>'
         },{
             dest: '<%= properties.devServerDir %>',
             src: 'examples/**',
@@ -51,14 +51,14 @@ module.exports = function(grunt) {
     },
 
     watch: {
-      anarch: {
+      p: {
         files: ['<%= properties.libDir %>/**', 'examples/**'],
-        tasks: ["hug:anarch", "copy:anarchDev"]
+        tasks: ["hug:p", "copy:pDev"]
       }
     },
 
     connect: {
-      anarch: {
+      p: {
         options: {
           hostname: "*",
           port:80,
@@ -100,10 +100,10 @@ module.exports = function(grunt) {
     }
   };
 
-  grunt.registerTask('default', 'hug:anarch');
+  grunt.registerTask('default', 'hug:p');
   grunt.registerTask('dev', [
-    'hug:anarch', 
-    'copy:anarchDev', 
+    'hug:p', 
+    'copy:pDev', 
     'connect', 
     'watch'
   ]);

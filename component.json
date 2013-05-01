@@ -1,7 +1,7 @@
 {
-	"name": "anarch", 
+	"name": "p", 
 	"version": "0.1.0",
-	"main": "./dist/internet.js",
+	"main": "./dist/p.js",
 	"ignore": [
 		"./src/**",
 		"node_modules",
