@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"main": "./dist/p.js",
 	"ignore": [
-		"./src/**",
+		"./lib/**",
 		"node_modules",
 		"Gruntfile.js",
 		"package.json"
