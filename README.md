@@ -8,8 +8,8 @@ Peer-to-peer, distributed networking is coming to the browser. P allows you to d
 The second point is the magic. It allows you to do things like using a public server (WebSocket server) 
 to start a network of peers and then disconnecting from the public server while persisting the existing network.
 
-P relies on very young technology -- [WebRTC](http://www.webrtc.org/). Currently, only Chrome has the 
-ability to establish the P2P data channels between browsers that p uses.
+P relies on  young technology -- [WebRTC](http://www.webrtc.org/). Currently, only Chrome has the 
+ability to establish the data channels between browsers that P relies on.
 
 It uses [onramp](https://github.com/oztu/onramp), a simple WebSocket server, as the signaling channel to 
 establish the connections.
