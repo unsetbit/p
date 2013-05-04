@@ -1,28 +1,85 @@
 <section class="description-section">
-  <h2>Sharing your work</h2>
+  <h2>Contributing to P</h2>
 
   <p>
-  P allows you to establish direct browser-to-browser connections. With P, you can:
+    P is a young open source project with many areas for improvement. Pull requests are welcome
+    at <a href="https://github.com/oztu/p">GitHub</a>.
   </p>
 
-  <ul>
-    <li>Establish connections to other browsers using a WebSocket server.</li>
-    <li>Establish connections to other browsers using connections you've established to other browsers.</li>
-  </ul>
+  <h2>Building from source</h2>
+  <pre class="prettyprint lang-sh">
+npm install -g bower; # Installs Bower, a package manager used by P
+npm install -g grunt-cli; # Installs CLI for Grunt, the build engine for P
+git clone git://github.com/oztu/p.git; # Clone the P repository
+cd p; # Enter into the P directory
+npm install; # Install dev dependencies
+bower install; # Installs runtime dependencies
+grunt dev; # Start the dev builder
+</pre>
 
   <p>
-    After a connection is established the middleman is no longer nescessary, there is are
-    no proxies involved.
+    If all goes well, Grunt is now watching source files for changes and running a dev
+    server on <a href="http://localhost:20501">localhost:20501</a> where you can try out examples. 
+    Whenever you modify a file, grunt will rebuild the project
+    automatically.
   </p>
 
+  <h2>What's in the repo</h2>
   <p>
-    P relies on young technology -- <a href="http://www.webrtc.org/">WebRTC</a>. 
-    Currently, only Chrome has the ability to establish the data channels between browsers 
-    that P relies on.
+    <ul>
+      <li>
+        <b>build/</b> &ndash; Temporary build files, the dev server files are also put here
+      </li>
+      <li>
+        <b>components/</b> &ndash; Managed by Bower, a package manager
+      </li>
+      <li>
+        <b>dist/</b> &ndash; Distributable files
+      </li>
+      <li>
+        <b>examples/</b>
+      </li>
+      <li>
+        <b>lib/</b> &ndash; Source files of the modules for the P project
+        <ul>
+          <li>
+            <b>Connection.js</b> &ndash; Base connection class for nodes
+          </li>
+          <li>
+            <b>P.js</b> &ndash; The root of the project, exported as a global variable
+          </li>
+          <li>
+            <b>protocol.js</b> &ndash; The P protocol definition
+          </li>
+          <li>
+            <b>RtcConnection.js</b> &ndash; WebRTC-specific Connection
+          </li>
+          <li>
+            <b>SocketConnection.js</b> &ndash; WebSocket-specific Connection
+          </li>
+          <li>
+            <b>utils.js</b> &ndash; Utilities used across the project
+          </li>
+        </ul>
+      </li>
+      <li>
+        <b>node_modules/</b> &ndash; Managed by NPM, a package manager
+      </li>
+      <li>
+        <b>component.json</b> &ndash; Bower component definition file
+      </li>
+      <li>
+        <b>Gruntfile.js</b> &ndash; Grunt task file, used to define build process
+      </li>
+      <li>
+        <b>package.json</b> &ndash; NPM module definition file
+      </li>
+    </ul>
   </p>
 
+  <h2>Creating a Release Build</h2>
   <p>
-    Currently <a href="https://github.com/oztu/onramp">onramp</a>, a simple WebSocket server, 
-    is used as the signaling channel to establish initial connections.
+    Execute <code>grunt release</code> to generate a new p.js file in the dist/ folder. This is
+    a packaged and minified version of P.
   </p>
 </section>
