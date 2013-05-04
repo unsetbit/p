@@ -1,14 +1,15 @@
-# P
+# P is peer-to-peer distributed networking with browsers
 
-Peer-to-peer, distributed networking is coming to the browser. P allows you to do two things:
+P allows you to establish direct browser-to-browser connections. A middle-man is nescessary in order to establish 
+a direct connection between browsers and P allows the use of either a WebSocket server or an existing peer-to-peer
+connection. This means you can:
 
 1. Establish connections to other browsers using a WebSocket server.
 2. Establish connections to other browsers using connections you've established to other browsers.
 
-The second point is the magic. It allows you to do things like using a public server (WebSocket server) 
-to start a network of peers and then disconnecting from the public server while persisting the existing network.
+After a connection is established the middleman is no longer nescessary.
 
-P relies on  young technology -- [WebRTC](http://www.webrtc.org/). Currently, only Chrome has the 
+P relies on young technology -- [WebRTC](http://www.webrtc.org/). Currently, only Chrome has the 
 ability to establish the data channels between browsers that P relies on.
 
 It uses [onramp](https://github.com/oztu/onramp), a simple WebSocket server, as the signaling channel to 
