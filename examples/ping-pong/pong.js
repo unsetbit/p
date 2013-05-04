@@ -1,21 +1,22 @@
-var pongingAnarch = Anarch.create();
+// Create the root peer node
+var pongingPeer = P.create();
 
-// First, establish a connection to the onramp which will 
-// help us connect to other browsers
-var webSocketConnection2 = pongingAnarch.to('ws://127.0.0.1:20500/');
+// Connect to the websocket server, onramp, which will help
+// us connect to other browsers
+var webSocketPeer = pongingPeer.to('ws://127.0.0.1:20500/');
 
 // Whenever an RTC channel is established, call the handler function
-webSocketConnection2.on('connection', handleRtcConnection);
+webSocketPeer.on('connection', handleRtcConnection);
 
-function handleRtcConnection(rtcConnection){
+function handleRtcConnection(webRtcPeer){
 	// When ever another browser connects, listen for messages
-	rtcConnection.on('message', function(message){
+	webRtcPeer.on('message', function(message){
 		// Output the message
-		console.log('Got: ' + message);
+		console.log('I received: ' + message);
 
 		// Wait one second then respond with a pong
 		setTimeout(function(){
-			rtcConnection.send('Pong!');
+			webRtcPeer.send('Pong!');
 		}, 1000);
 	});	
 }
