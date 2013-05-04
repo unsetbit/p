@@ -1,4 +1,4 @@
-# P is peer-to-peer distributed networking with browsers
+# P is peer-to-peer networking with browsers
 
 P allows you to establish direct browser-to-browser connections. A middle-man is nescessary in order to establish 
 a direct connection between browsers and P allows the use of either a WebSocket server or an existing peer-to-peer
