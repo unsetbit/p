@@ -1,0 +1,116 @@
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Noto Sans'), local('NotoSans'), url(http://themes.googleusercontent.com/static/fonts/notosans/v1/LeFlHvsZjXu2c3ZRgBq9nD8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+}
+@font-face {
+  font-family: 'Noto Serif';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Noto Serif'), local('NotoSerif'), url(http://themes.googleusercontent.com/static/fonts/notoserif/v1/eCpfeMZI7q4jLksXVRWPQxsxEYwM7FgeyaSgU71cLG0.woff) format('woff');
+}
+
+$primary: white;
+$primaryText: black;
+$primaryAnchor: blue;
+$primaryAnchorHighlight: blue;
+h1, h2, h3, h4, h5, h6{
+	font-weight:normal;
+}
+body, html{
+	background-color: $primary;
+	color:$primaryText;
+	height:100%;
+	font-family: 'Noto Sans', sans-serif;
+
+	a{
+		outline: 0;
+		color:$primaryAnchor;
+
+		&:hover{
+			color:$primaryAnchorHighlight;
+		}
+	}
+	&.nav-expanded {
+		overflow:hidden;
+	}
+	padding-bottom:50px;
+}
+.api h4 code{
+	font-size:17.5px;
+}
+.nav-expanded .nav{
+	height:100%;
+	padding-right:0px;
+	overflow-y:auto;
+
+	.expand-toggle{
+		opacity:0;
+	}
+}
+
+.page-container{
+	font-size:16px;
+	line-height:22px;
+	position:relative;
+	width:650px;
+	margin: 15px auto 0 auto;
+}
+
+.description-section{
+	margin:0 auto; 
+	width:650px; 
+
+	&:first-child{
+		padding-top:0px;
+	}
+
+	p.lead{
+		font-size:30px; margin-bottom:12px;
+	}
+}
+
+footer{
+	width:650px;
+	margin: 0 auto;
+	padding: 40px 0;
+	color:#aaa;
+	a{
+		color:#6666ff;
+	}
+}
+
+nav{
+	div{
+		width:650px;
+		margin:0 auto;
+		font-size:16px;
+		a{
+			display:inline-block;
+			list-style: none;
+			padding:10px;
+
+			&.active{
+				background-color:rgb(41, 155, 50);
+				color:white;
+				cursor:default;
+				text-decoration: none;
+			}
+		}
+	}
+}
+
+.top-banner{
+	background-position:top center;
+	background-repeat: no-repeat;
+	overflow:hidden;
+	height:200px;
+	text-align:center;
+	padding-top:150px;
+	color:white;
+	box-shadow:inset 0px -1px 10px black;
+	font-size:210px;
+	text-shadow:0px 1px 1px black;
+	background-image:url('../style/images/banner.jpg');
+}

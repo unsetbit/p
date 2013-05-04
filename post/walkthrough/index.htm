@@ -1,0 +1,213 @@
+<section class="description-section">
+  <h2>An example of how P works</h2>
+  <p>
+    Let's walk through a basic application written with P. We'll create two scripts,
+    so that when they load (each in a different browser), they'll connect to each other and
+    start sending each other "ping" and "pong" messages.
+  </p>
+
+  <h3>The onramp Server</h3>
+  <p>
+    <a href="https://github.com/oztu/onramp">onramp</a> is 
+    a basic WebSocket server which follows the same protocol as P in establishing connections.
+    Whenever onramp recieves a connection, it broadcasts the id of that connection to all of the
+    other connections. This way, any connection to onramp can establish a peer connection to any other
+    connection with the help of onramp.
+  </p>
+
+  <pre class="prettyprint linenums lang-js">
+var Onramp = require('onramp');
+
+// Create a default onramp instance at localhost:20500
+var onramp = Onramp.create();
+
+// Whenever a connection is established, tell it about all the 
+// other connections available, and then broadcast its connection
+// id to the rest of the connections so everyone always
+// knows who is connected to the onramp
+onramp.on("connection", function(connection){
+  onramp.connections.forEach(function(other){
+    // Don't send a connection its own id
+    if(other === connection) return;
+    
+    connection.send('remote address', other.id);
+    other.send('remote address', connection.id);
+  });
+});  
+</pre>
+
+  <h3>Ping Application</h3>
+  The ping application runs on the browser. It connects to the onramp server and to any connection
+  which connects to the onramp server. When it establishes a new peer connection, it sends a "ping"
+  message and waits for a response. Then, whenever it receives a message, it responds with a "ping".
+
+  <h4>ping.html</h4>
+  <pre class="prettyprint linenums lang-html">
+&lt;!doctype html&gt;
+&lt;title&gt;Pong&lt;/title&gt;
+&lt;script src="p.js"&gt;&lt;/script&gt;
+&lt;script src="ping.js"&gt;&lt;/script&gt;
+</pre>
+
+  <h4>ping.js</h4>
+  <pre class="prettyprint linenums lang-js">
+// Create the root node
+var pingingPeer = P.create();
+
+// Connect to the onramp server at its default location
+var webSocketPeer = pingingPeer.to('ws://127.0.0.1:20500/');
+
+// Listen to the messages the onramp server sends
+webSocketPeer.on('message', function(message, arg1){
+  // If we recieve a remote address, start pinging it
+  if(message === "remote address"){
+    var peerAddress = arg1;
+    startPinging(peerAddress);
+  }
+});
+
+function startPinging(address){
+  // Establish an RTC connection to the given address
+  var webRtcPeer = webSocketPeer.to(address);
+
+  // Once the channel is open, send the initial ping
+  webRtcPeer.on('open', function(){
+    webRtcPeer.send('Ping?');
+  });
+
+  // Whenever we recieve a message, output it to the console,
+  // wait one second, then respond with another ping
+  webRtcPeer.on('message', function(message){
+    console.log('I received: ' + message);
+
+    setTimeout(function(){
+      webRtcPeer.send('Ping?'); 
+    }, 1000);
+  });
+}
+</pre>
+
+  <h3>Pong Application</h3>
+  The pong application runs on the browser. It connects to the onramp server and to any connection
+  which connects to the onramp server. It automatically accepts any connection requests and when
+  a peer connection sends it a message, it responds with a "pong".
+
+  <h4>pong.html</h4>
+  <pre class="prettyprint linenums lang-html">
+&lt;!doctype html&gt;
+&lt;title&gt;Pong&lt;/title&gt;
+&lt;script src="p.js"&gt;&lt;/script&gt;
+&lt;script src="pong.js"&gt;&lt;/script&gt;
+</pre>
+
+  <h4>pong.js</h4>
+  <pre class="prettyprint linenums lang-js">
+// Create the root node
+var pongingPeer = P.create();
+
+// Connect to the onramp server at its default location
+var webSocketPeer = pongingPeer.to('ws://127.0.0.1:20500/');
+
+// Whenever an RTC connection is established to this browser via
+// the onramp server, call the handler function
+webSocketPeer.on('connection', handleRtcConnection);
+
+function handleRtcConnection(webRtcPeer){
+  webRtcPeer.on('message', function(message){
+    // Output the message
+    console.log('I received: ' + message);
+
+    // Wait one second then respond with a "pong"
+    setTimeout(function(){
+      webRtcPeer.send('Pong!');
+    }, 1000);
+  }); 
+}
+</pre>
+
+  <h3>Running the Example</h3>
+  <p>
+    Now that we know what all these pieces do, let's run it and see the results. 
+    You'll need <a href="http://nodejs.org/">Node.js 0.10+</a> and 
+    <a href="http://google.com/chrome">Chrome 26+</a>. Once you have those installed,
+    open up your console and execute the following:
+  </p>
+
+  <pre class="prettyprint linenums">
+npm install -g onramp; # installs the onramp server
+npm install -g p-examples; # installs the p examples server
+onramp&amp; # start the onramp server in the background
+p-examples; # start the example server in the foreground
+</pre>
+
+  <p>
+    If all goes well, you should see <code>P example server running on localhost:20501</code> in your console.
+    If not, e-mail me (ozanturgut@gmail.com) and I'll try to help.
+  </p>
+
+  <p>
+    Now, find where your Chrome browser is installed and execute it with the <code>--enable-data-channels</code> flag. 
+    For example, on my Windows box I would execute 
+    <code>C:\Users\Ozan\AppData\Local\Google\Chrome\Application\chrome.exe --enable-data-channels</code>. Finally,
+    navigate to <a href="http://localhost:20501/ping-pong/ping.html">http://localhost:20501/ping-pong/ping.html</a> in one tab
+    and <a href="http://localhost:20501/ping-pong/pong.html">http://localhost:20501/ping-pong/pong.html</a> in another.
+  </p>
+
+  <p>
+    If you open up the JavaScript console in either of the tabs, you should notice <code>I received: Pong!</code> in the ping.html tab
+    and <code>I received: Ping?</code> in the pong.html tab. Congratulations! You've established a direct connection from
+    one browser to another, albeit on the same machine for the sake of simplicity.
+  </p>
+
+  <h3>What Happened?</h3>
+  <p>
+    <a href="resource/image/ping-pong-flow.png">
+      <img src="resource/image/ping-pong-flow.png" />
+    </a>
+     <ol>
+      <li>You opened ping.html in the browser</li>
+      <li>
+        Your browser opened a WebSocket connection between the Ping Application and the onramp server.
+        Since there were no other connections to the onramp server at the time, nothing else happened.
+      </li>
+      <li>You opened pong.html in the browser</li>
+      <li>
+        Your browser opened a WebSocket connection between the Pong Application and the onramp server.
+      </li>
+      <li>
+        Since there was already another connection to the onramp server (the Ping Application), the onramp
+        server sent the id of the Pong Application to the Ping Application, and the id of the Ping Application
+        to the Pong Application. 
+      </li>
+      <li>
+        The Pong Application wasn't listening for remote addresses so the message from the onramp server was
+        discarded.
+      </li>
+      <li>
+        This Ping Application was listening for remote addresses, so when it received the remote address (of the 
+        Pong Application), it asked the onramp server to help it establish a direct, peer-to-peer connection to it.
+      </li>
+      <li>
+        The onramp server acted as the middle man the hand-shaking required for both peers to meet and connect 
+        to each other.
+      </li>
+      <li>
+        When the peer connection was established and open between the Ping and the Pong application, the Ping
+        application send an initial "Ping?" message to the Pong application.
+      </li>
+      <li>
+        The Pong Application was setup to respond to any message from a peer with a "Pong!" message, so when
+        it received the "Ping?" message, it waited one second and sent a "Pong!" message back.
+      </li>
+      <li>
+        The Ping Application was setup to respond to any message from a peer with a "Ping?" message, so when
+        it received the "Pong!" message, it waited one second and sent a "Ping?" message back.
+      </li>
+    </ol>
+
+    <p>
+      Steps 10 and 11 will continue on until either tab is closed. Note that it will even continue if the onramp
+      server is shutdown, because it is no longer being utilized by the two applications.
+    </p>
+  </p>
+</section>
