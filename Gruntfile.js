@@ -32,7 +32,9 @@ module.exports = function(grunt) {
       p:{
         src: ["<%= properties.libDir %>/**"],
         dest: "<%= properties.buildDir %>/p.max.js",
-        path: ["./components"]
+        path: ["./components"],
+        exports: '<%= properties.libDir %>/P.js',
+        exportedVariable: 'P'
       }
     },
     
@@ -47,6 +49,14 @@ module.exports = function(grunt) {
             expand: true
         }
         ]
+      }
+    },
+
+    uglify: {
+      p: {
+        files: {
+          'dist/p.js': ['<%= hug.p.dest %>']
+        }
       }
     },
 
@@ -68,6 +78,7 @@ module.exports = function(grunt) {
     },
 
     jshint: {
+      p: ['./lib/**/*.js'],
       options: {
         camelcase: true,
         strict: false,
@@ -85,27 +96,34 @@ module.exports = function(grunt) {
         eqnull: true,
         smarttabs: true,
         browser:true,
-        es5: true
+        es5: true,
+        globals: {
+          module: true,
+          exports: true,
+          require: true,
+          RTCIceCandidate: true,
+          RTCSessionDescription: true,
+          webkitRTCPeerConnection: true
+        }
       },
-      globals: {
-        console: true,
-        angular: true,
-        turn: true,
-        module: true,
-        exports: true,
-        require: true,
-        moment: true,
-        $ : true
-      }
+     
     }
   };
 
-  grunt.registerTask('default', 'hug:p');
+  grunt.registerTask('default', 'release');
+
   grunt.registerTask('dev', [
     'hug:p', 
     'copy:pDev', 
     'connect', 
     'watch'
+  ]);
+
+
+  grunt.registerTask('release', [
+    'jshint:p',
+    'hug:p', 
+    'uglify:p'
   ]);
 
   grunt.initConfig(config);
