@@ -1,10 +1,18 @@
-# p
+# P
 
-p allows you to connect one browser to another. It uses [onramp](https://github.com/oztu/onramp) as the signaling
-channel to establish the connections.
+Peer-to-peer, distributed networking is coming to the browser. P allows you to do two things:
 
-p relies on very young technology -- [WebRTC](http://www.webrtc.org/). Currently, only Chrome has the 
+1. Establish connections to other browsers using a WebSocket server.
+2. Establish connections to other browsers using connections you've established to other browsers.
+
+The second point is the magic. It allows you to do things like using a public server (WebSocket server) 
+to start a network of peers and then disconnecting from the public server while persisting the existing network.
+
+P relies on very young technology -- [WebRTC](http://www.webrtc.org/). Currently, only Chrome has the 
 ability to establish the P2P data channels between browsers that p uses.
+
+It uses [onramp](https://github.com/oztu/onramp), a simple WebSocket server, as the signaling channel to 
+establish the connections.
 
 ## Example
 ```javascript
@@ -83,30 +91,34 @@ for the event will be removed.
 ### `[p instance].close()`
 Closes the connection to the peer
 
-## Trying the example
+## Trying Out an Example
 
 Prerequisites:
 
 1. Node 0.10+
 2. Chrome 26+
-3. grunt-cli (execute `npm install grunt-cli -g`)
-4. bower (execute `npm install bower -g`)
-5. onramp (execute `npm install onramp -g`)
 
 Running the example
 
-1. Clone this repo (execute `git clone https://github.com/oztu/p`)
-2. Go in to the directory (execute `cd p`)
-3. Start the dev server (execute `grunt dev`)
-4. Start onramp (exectue `onramp`)
-5. Start Chrome with the `--enable-data-channels` flag
-6. Go to [http://localhost/examples/ping-pong/ping.html](http://localhost/examples/ping-pong/ping.html)
-7. Go to [http://localhost/examples/ping-pong/pong.html](http://localhost/examples/ping-pong/pong.html)
-8. Open up your dev console and note the messages you're receiving directly from the other browser
+1. Install onramp by executing `npm install -g onramp`
+>    onramp is a simple WebSocket server which helps browsers 
+that are connected to it connect to each other.
 
-You should now see "Got: Ping?" and "Got: Pong!" in alternating order. This means your browser was able to establish an
-RTC connection to itself through onramp. You can now shut down onramp and your connection between the two browsers
-(in this case, the same one) will still persist.
+2. Start onramp by executing `onramp`
+3. Install p-examples by executing `npm install -g p-examples`
+>    p-examples is a basic HTTP server which runs the examples files on localhost:20501.
+
+4. Start p-examples by executing `p-examples`
+5. Start Chrome with the `--enable-data-channels` flag
+6. Naviage a browser to [http://localhost:20501/ping-pong/ping.html](http://localhost:20501/examples/ping-pong/ping.html).
+7. Naviage another browser to [http://localhost:20501/ping-pong/pong.html](http://localhost:20501/examples/ping-pong/pong.html).
+>    If you don't have two machines, you can just use different tabs.
+
+8. Open up your Chrome JavaScript Console
+
+You should now see "I received: Pong!" and "I received: Ping?" in the console of ping.html and pong.html. 
+This means your browser was able to establish an RTC connection to itself through onramp.
+You can now shut down onramp and your connection between the two browsers will persist.
 
 Take a look at [ping.js](https://github.com/oztu/p/blob/master/examples/ping-pong/ping.js) 
 and [pong.js](https://github.com/oztu/p/blob/master/examples/ping-pong/pong.js), along with 
