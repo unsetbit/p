@@ -2,7 +2,7 @@
   <h2>Peer-to-peer networking with browsers</h2>
 
   <p>
-  P allows you to establish direct browser-to-browser connections. With P, you can:
+  P is a small JavaScript library for creating peer-to-peer applications in browsers. With P, you can:
   </p>
 
   <ul>
@@ -13,6 +13,29 @@
   <p>
     After a connection is established the middleman is no longer nescessary &ndash; 
     no proxies are involved.
+  </p>
+
+  <h3>An Example of What's Possible</h3>
+  <p>
+    Let's say we have two WebSocket servers: onramp-1 and onramp-2. 
+    Alice can only connect to onramp-1 and Charlie can only connect to onramp-2. 
+    Bob can connect to both. 
+    Using P, we can establish connections between Bob and Alice, and
+    Bob and Charlie with the help of the onramp servers. 
+    We can then establish a connection between Alice and Charlie with the help of Bob.
+  </p>
+  <p>
+    <a href="resource/image/party-example.png">
+      <img src="resource/image/party-example-no-header.png" />
+    </a>
+
+    <ol>
+      <li>Alice connects to onramp-1, Charlie connects to onramp-2, Bob connects to onramp-1 and onramp-2.</li>
+      <li>Bob connects to Alice and Charlie with the help of onramp-1 and onramp-2, respectively.</li>
+      <li>Alice connects to Charlie with the help of Bob.</li>
+    </ol>
+
+    <a href="#/party-example">Learn more abut this example and try it for yourself.</a>
   </p>
 
   <p>

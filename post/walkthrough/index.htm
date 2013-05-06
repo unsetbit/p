@@ -130,7 +130,7 @@ function handleRtcConnection(webRtcPeer){
     Now that we know what all these pieces do, let's run it and see the results. 
     You'll need <a href="http://nodejs.org/">Node.js 0.10+</a> and 
     <a href="http://google.com/chrome">Chrome 26+</a>. Once you have those installed,
-    open up your console and execute the following:
+    open up your console and execute the following (you may need <code>sudo</code>):
   </p>
 
   <pre class="prettyprint linenums">
@@ -146,9 +146,24 @@ p-examples; # start the example server in the foreground
   </p>
 
   <p>
-    Now, find where your Chrome browser is installed and execute it with the <code>--enable-data-channels</code> flag. 
-    For example, on my Windows box I would execute 
-    <code>C:\Users\Ozan\AppData\Local\Google\Chrome\Application\chrome.exe --enable-data-channels</code>. Finally,
+    Now, find where your Chrome browser is installed and execute it with the <code>--enable-data-channels</code> flag.
+    The simplest way to do it if via the terminal:
+
+    <ul>
+      <li>
+        Windows: <code>[path to chrome.exe] --enable-data-channels</code>
+      </li>
+      <li> 
+        Mac: <code>open /Applications/Google\ Chrome.app --args --enable-data-channels</code>
+      </li>
+      <li>
+        Linux: <code>[chrome or chromium executable] --enable-data-channels</code>
+      </li>
+    </ul>
+  </p>
+
+  <p>
+    Finally,
     navigate to <a href="http://localhost:20501/ping-pong/ping.html">http://localhost:20501/ping-pong/ping.html</a> in one tab
     and <a href="http://localhost:20501/ping-pong/pong.html">http://localhost:20501/ping-pong/pong.html</a> in another.
   </p>

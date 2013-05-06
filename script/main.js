@@ -21,5 +21,7 @@ app.config(['$routeProvider', function($routeProvider){
 		templateUrl: 'post/use/index.htm'
 	}).when('/contribute', {
 		templateUrl: 'post/contribute/index.htm'
+	}).when('/party-example', {
+		templateUrl: 'post/party-example/index.htm'
 	});
 }]);
