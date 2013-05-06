@@ -3,7 +3,7 @@ var pingingPeer = P.create();
 
 // Connect to the websocket server, onramp, which will help
 // us connect to other browsers
-var webSocketPeer = pingingPeer.to('ws://127.0.0.1:20500/');
+var webSocketPeer = pingingPeer.to('ws://' + location.hostname + ':20500/');
 
 // Listen to the messages the onramp server sends
 webSocketPeer.on('message', function(message){

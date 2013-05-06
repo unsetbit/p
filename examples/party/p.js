@@ -158,11 +158,7 @@ Emitter.prototype.hasListeners = function(event){
 };
 
 ;return module.exports;}({},{});
-var __m5 = function(module,exports){module.exports=exports;
-//https://gist.github.com/LeverOne/1308368
-exports.uuidV4 = function(a,b){for(b=a='';a++<36;b+=a*51&52?(a^15?8^Math.random()*(a^20?16:4):4).toString(16):'-');return b;};
-;return module.exports;}({},{});
-var __m3 = function(module,exports){module.exports=exports;
+var __m6 = function(module,exports){module.exports=exports;
 exports.NAME = "p";
 exports.MESSAGE_TYPE = {
 	PLAIN: 0, // [0, message]
@@ -176,9 +172,13 @@ exports.MESSAGE_TYPE = {
 };
 
 ;return module.exports;}({},{});
+var __m5 = function(module,exports){module.exports=exports;
+//https://gist.github.com/LeverOne/1308368
+exports.uuidV4 = function(a,b){for(b=a='';a++<36;b+=a*51&52?(a^15?8^Math.random()*(a^20?16:4):4).toString(16):'-');return b;};
+;return module.exports;}({},{});
 var __m0 = function(module,exports){module.exports=exports;
 var Emitter = __m7,
-	protocol = __m3,
+	protocol = __m6,
 	uuidV4 = __m5.uuidV4,
 	MESSAGE_TYPE = protocol.MESSAGE_TYPE,
 	Connection;
@@ -270,7 +270,6 @@ Connection.prototype.emitPlainMessage = function(args){
 
 Connection.prototype.relayMessageHandler = function(destinationId, message){
 	var destination = this.p.connectionMap[destinationId];
-
     if(!destination) return;
     
     destination.relayed(
@@ -351,8 +350,8 @@ Connection.prototype.rtcFirewall = function(data, accept){
 };
 
 ;return module.exports;}({},{});
-var __m6 = function(module,exports){module.exports=exports;
-var protocol = __m3,
+var __m2 = function(module,exports){module.exports=exports;
+var protocol = __m6,
 	MESSAGE_TYPE = protocol.MESSAGE_TYPE,
 	PROTOCOL_NAME = protocol.NAME,
 	Connection = __m0,
@@ -509,9 +508,9 @@ RtcConnection.prototype.addIceCandidate = function(candidate){
 	this.rtcConnection.addIceCandidate(new RTCIceCandidate(candidate));
 };
 ;return module.exports;}({},{});
-var __m2 = function(module,exports){module.exports=exports;
-var RtcConnection = __m6,
-	protocol = __m3,
+var __m3 = function(module,exports){module.exports=exports;
+var RtcConnection = __m2,
+	protocol = __m6,
 	MESSAGE_TYPE = protocol.MESSAGE_TYPE,
 	PROTOCOL_NAME = protocol.NAME,
 	DEFAULT_ADDRESS = "ws://127.0.0.1:20500/",
@@ -585,10 +584,10 @@ SocketConnection.prototype.openHandler = function(event){
 ;return module.exports;}({},{});
 var __m1 = function(module,exports){module.exports=exports;
 var Emitter = __m7,
-	protocol = __m3,
+	protocol = __m6,
 	MESSAGE_TYPE = protocol.MESSAGE_TYPE,
 	PROTOCOL_NAME = protocol.NAME,
-	SocketConnection = __m2,
+	SocketConnection = __m3,
 	P;
 
 P = module.exports = function(emitter){

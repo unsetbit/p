@@ -3,7 +3,7 @@ var pongingPeer = P.create();
 
 // Connect to the websocket server, onramp, which will help
 // us connect to other browsers
-var webSocketPeer = pongingPeer.to('ws://127.0.0.1:20500/');
+var webSocketPeer = pongingPeer.to('ws://' + location.hostname + ':20500/');
 
 // Whenever an RTC channel is established, call the handler function
 webSocketPeer.on('connection', handleRtcConnection);

@@ -1,6 +1,6 @@
 // This script is for the node which will act as an "onramp" for other peers.
 // Sets the onramp address to the default
-var onrampAddress = "ws://127.0.0.1:20500";
+var onrampAddress = 'ws://' + location.hostname + ':20500/';
 
 // Create the root peer node
 var rootNode = P.create();
