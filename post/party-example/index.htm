@@ -1,42 +1,34 @@
 <section class="description-section">
   <h2>Having a Party with P</h2>
   <p>
-    P relies on very new technology, so it's a bit trickier to get started with than
-    most libraries. You'll need 
-    <a href="http://nodejs.org/">Node.js 0.10+</a> and 
-    <a href="http://google.com/chrome">Chrome 26+</a> before getting started.
+    <a href="resource/image/party-example.png">
+      <img src="resource/image/party-example-no-header.png" />
+    </a>
+    <ol>
+      <li>Alice connects to onramp-1, Charlie connects to onramp-2, Bob connects to onramp-1 and onramp-2.</li>
+      <li>Bob connects to Alice and Charlie with the help of onramp-1 and onramp-2, respectively.</li>
+      <li>Alice connects to Charlie with the help of Bob.</li>
+    </ol>
   </p>
 
-  <h3>Installing and running onramp</h3>
+  <h3>Running the Example</h3>
   <p>
-    onramp is a simple WebSocket server which broadcasts its connections to all other
-    connections. This allows you to quickly build up a peer-to-peer network to play 
-    around with.
+    You'll first need <a href="http://nodejs.org/">Node.js 0.10+</a> and 
+    <a href="http://google.com/chrome">Chrome 26+</a>. Once you have those installed,
+    open up your console and execute the following (you may need <code>sudo</code>):
   </p>
-  <p>To install and run onramp, execute the following in your terminal (you may need <code>sudo</code>):</p>
+
   <pre class="prettyprint">
-npm install -g onramp; # install it to the PATH
-onramp; # start onramp with default settings
+npm install -g onramp; # installs the onramp server
+npm install -g p-examples; # installs the p examples server
+onramp&amp; # start the onramp server in the background on default port 20500
+onramp -h :20400&amp; # start the second onramp server in the background on port 20400
+p-examples; # start the example server in the foreground
 </pre>
-  <p>
-    By default onramp
-    starts on localhost:20500. You can change the host by passing in the 
-    <code>-h [host]</code> argument; for example: <code>onramp -h ozan.io:9101</code>.
-  </p>
 
-  <h3>Downloading and using P</h3>
   <p>
-    You can <a href="https://raw.github.com/oztu/p/master/dist/p.js">download the latest version of P here</a>.
-    Include it in your application as you would any other script (i.e. &lt;script&gt;). P creates one global variable
-    named "P".
-  </p>
-  <p>
-    Current P only runs on Chrome with the <code>--enable-data-channels</code> flag. 
-    This is because P relies on a new technology, WebRTC Data Channels, which only implemented
-    in Chrome as of May 2013.
-  </p>
-  <p>
-    The simplest way to start Chrome with the data-channels flag is from the terminal.
+    Now, find where your Chrome browser is installed and execute it with the <code>--enable-data-channels</code> flag.
+    The simplest way to do it is via the terminal:
 
     <ul>
       <li>
@@ -50,126 +42,44 @@ onramp; # start onramp with default settings
       </li>
     </ul>
   </p>
-<div class="api">
-  <h3>API</h3>
-  <ul class="unstyled well">
-    <li>
-      <b>P.create()</b> Create the root node
-      <ul>
-        <li><b>node.to(address)</b> Connect to another peer</li>
-        <li><b>node.send(address)</b> Send the peer a message</li>
-        <li><b>node.on(address)</b> Listen to events from the peer</li>
-        <li><b>node.removeListener(address)</b> Remove event listeners from the peer</li>
-        <li><b>node.close(address)</b> Close the connection to the peer</li>
-      </ul>
-    </li>
-  </ul>
+  <p>
+    Finally, open <a href="http://localhost:20501/party/bob.html">http://localhost:20501/party/bob.html</a>, 
+    <a href="http://localhost:20501/party/alice.html">http://localhost:20501/party/alice.html</a>, and
+    <a href="http://localhost:20501/party/charlie.html">http://localhost:20501/party/charlie.html</a>.
+  </p>
+  <p>
+    If you check the JavaScript console for charlie.html, you should see "[a unique id] said Hi, I'm Alice!".
+    This means that Alice was successfully able to connect to Charlie.
+  </p>
 
-<h4 style="margin-top:20px;"><code>P.create()</code></h4>
-<p>
-  Creates the root node of a P application used to connect to onramp servers.
-</p>
-<pre class="prettyprint lang-js">
-// Creates a root p instance
-rootNode = P.create();
-
-// Listens for any connections to this browser
-rootNode.on('connection', function(connection){
-  console.log('new connection', connection);
-});
-
-// Connects to an on ramp server
-webSocketNode = rootNode.to('ws://localhost:20500');
-</pre>
-
-<h4><code>node.to(address)</code></h4>
-Uses one P node to connect to another. 
-<ul>
-  <li>The root node can connect to WebSocket nodes (i.e. onramp servers) via their WebSocket address.</li>
-  <li>WebSocket nodes can connect to WebRTC nodes with the remote connection's id as the address.</li>
-  <li>WebRTC nodes can connect to other WebRTC nodes with the remote connection's id as the address.</li>
-</ul>
-<pre class="prettyprint lang-js">
-// Use the root node to connect to the onramp server at address
-webSocketNode = rootNode.to(address);
-
-// Use the onramp node to connect to a remote WebRTC node with the 
-// connection id as the address
-webRtcNode = webSocketNode.to(address);
-
-// Use a WebRTC node to connect to a remote WebRTC node with the 
-// remote connection id as the address
-webRtcNode = webRtcNode.to(address);
-</pre>
-
-<h4><code>node.send(arg1[, arg2, ...])</code></h4>
-Send 1+ JSON-serializable arguments or 1 ArrayBuffer to the target node. The node will be able to receive the message
-by listening for the 'message' or 'array buffer' events.
-
-<pre class="prettyprint lang-js">
-// anyNode.send(arg1, arg2, ...);
-
-// Send a multi-parameter JSON message
-anyNode.send('Hello', {myName: 'Alice'});
-
-// Send an array buffer
-buffer = new ArrayBuffer(12);
-anyNode.send(buffer);
-</pre>
-
-<h4><code>node.on(event, callback)</code></h4>
-Bind a handler for one of these events:
-<ul>
-  <li>
-    <code>open</code>
-    fires when the connection to the node is established and ready. The callback is called
-    with no arguments.
-  </li>
-  <li>
-    <code>close</code>
-    fires when the connection to the node is closed. The callback is called
-    with no arguments.
-  </li>
-  <li>
-    <code>message</code>
-    fires when a JSON message from the peer is received. The callback may be called with
-    multiple arguments depending on the message.
-  </li>
-  <li>
-    <code>array buffer</code>
-    fires when an ArrayBuffer is received from the peer. The callback will be called with a single
-    argument.
-  </li>
-  <li>
-    <code>connection</code>
-    fires when a new connection is established via this peer. The callback will be called with a single
-    argument, the new node which has been connected to.
-  </li>
-</ul>
-<pre class="prettyprint lang-js">
-// Listen for connections made via this node
-anyNode.on('connection', function(anotherNode){
-
-  // Listen for messages from the new connection
-  anotherNode.on('message', function(){
-    console.log('arguments received', arguments);
-  });
-});
-</pre>
-
-<h4><code>node.removeListener(event[, callback])</code></h4>
-Removes an event handler. If a specific callback which was bound isn't provided, all callbacks for the
-even will be removed.
-<pre class="prettyprint lang-js">
-// Remove all existing message handlers.
-anyNode.removeListener('message');
-</pre>
-
-<h4><code>node.close()</code></h4>
-Closes a connection to a peer.
-<pre class="prettyprint lang-js">
-// Close the connection to the peer
-anyNode.close();
-</pre>
-</div>
+  <h3>What Happened</h3>
+  <p>
+    For the sake of simplicity, we hosted everything on one machine. We could
+    have just as easily hosted each node (onramp servers, browsers) 
+    in a different machine -- all we would have to change is the address to the 
+    onramp servers.
+  </p>
+  <p>
+    You can read each of the scripts to see what they were doing:
+    <ul>
+      <li>
+        <a href="https://raw.github.com/oztu/p/master/examples/party/bob.js">bob.js</a>,
+        connected to both onramp servers and used them to establish connections to both
+        Alice and Charlie.
+      </li>
+      <li>
+        <a href="https://raw.github.com/oztu/p/master/examples/party/alice.js">alice.js</a>,
+        connected to onramp-1, then accepted a connection Bob, and finally asked to be connected
+        to Charlie with the help of Bob.
+      </li>
+      <li>
+        <a href="https://raw.github.com/oztu/p/master/examples/party/charlie.js">charlie.js</a>,
+        connected to onramp-2, then accepted any connection requests made to it.
+      </li>
+      <li>
+        <a href="https://raw.github.com/oztu/onramp/master/bin/onramp">onramp</a>,
+        a basic WebSocket server which helps browsers connect to each other.
+      </li>
+    </ul>
+  </p>
 </section>
