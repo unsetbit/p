@@ -57,10 +57,10 @@ onramp; # start onramp with default settings
       <b>P.create()</b> Create the root node
       <ul>
         <li><b>node.to(address)</b> Connect to another peer</li>
-        <li><b>node.send(address)</b> Send the peer a message</li>
-        <li><b>node.on(address)</b> Listen to events from the peer</li>
-        <li><b>node.removeListener(address)</b> Remove event listeners from the peer</li>
-        <li><b>node.close(address)</b> Close the connection to the peer</li>
+        <li><b>node.send(arg1[, arg2, ...])</b> Send the peer a message</li>
+        <li><b>node.on(event, callback)</b> Listen to events from the peer</li>
+        <li><b>node.removeListener(event[, callback])</b> Remove event listeners from the peer</li>
+        <li><b>node.close()</b> Close the connection to the peer</li>
       </ul>
     </li>
   </ul>
