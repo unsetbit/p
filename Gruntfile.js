@@ -1,11 +1,4 @@
-var path = require('path');
-var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
-var folderMount = function folderMount(connect, point) {
-  return connect.static(path.resolve(point));
-};
-
 module.exports = function(grunt) {
-  //grunt.loadNpmTasks('grunt-contrib-livereload');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy'); 
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -13,7 +6,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.loadNpmTasks('grunt-hug');
+  grunt.loadNpmTasks('grunt-browserify');
   
   var config = {
     properties: {
@@ -28,21 +21,19 @@ module.exports = function(grunt) {
       dist: ['<%= properties.distDir %>']
     },
     
-    hug: {
-      p:{
-        src: ["<%= properties.libDir %>/**"],
-        dest: "<%= properties.buildDir %>/p.max.js",
-        path: ["./components"],
-        exports: '<%= properties.libDir %>/P.js',
-        exportedVariable: 'P'
+    browserify: {
+      p: {
+        files: {
+          '<%= properties.buildDir %>/p.js': '<%= properties.libDir %>/init.js'
+        }
       }
     },
-    
+
     copy: {
       pDev:{
         files: [{
             dest: '<%= properties.devServerDir %>/p.js',
-            src: '<%= hug.p.dest %>'
+            src: '<%= properties.buildDir %>/p.js'
         },{
             dest: '<%= properties.devServerDir %>',
             src: 'examples/**',
@@ -55,7 +46,7 @@ module.exports = function(grunt) {
     uglify: {
       p: {
         files: {
-          'dist/p.js': ['<%= hug.p.dest %>']
+          'dist/p.js': ['<%= properties.buildDir %>/p.js']
         }
       }
     },
@@ -63,7 +54,7 @@ module.exports = function(grunt) {
     watch: {
       p: {
         files: ['<%= properties.libDir %>/**', 'examples/**'],
-        tasks: ["hug:p", "copy:pDev"]
+        tasks: ["browserify:p", "copy:pDev"]
       }
     },
 
@@ -113,7 +104,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', 'release');
 
   grunt.registerTask('dev', [
-    'hug:p', 
+    'browserify:p', 
     'copy:pDev', 
     'connect', 
     'watch'
@@ -122,7 +113,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('release', [
     'jshint:p',
-    'hug:p', 
+    'browserify:p', 
     'uglify:p'
   ]);
 

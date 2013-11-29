@@ -1,0 +1,11 @@
+{
+  "name": "p",
+  "version": "0.1.0",
+  "main": "./dist/p.js",
+  "ignore": [
+    "./lib/**",
+    "node_modules",
+    "Gruntfile.js",
+    "package.json"
+  ]
+}
