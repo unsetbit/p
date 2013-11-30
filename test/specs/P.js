@@ -151,6 +151,31 @@ describe('P', function(){
 
 			expect(myP.getConnections().length).toBe(1);
 		});
+
+		it('can track at least 1000 connections', function(){
+			var myP = new P(mockEmitter),
+				counter = 1000,
+				closeQueue = [],
+				mockConnecion;
+
+			expect(myP.getConnections().length).toBe(0);
+
+			while(counter > 0){
+				mockConnection = createMockEmitter();
+				closeQueue.push(mockConnection.on.withArgs('close'));
+
+				myP.connectionHandler(mockConnection);
+				counter--;
+			}
+			
+			expect(myP.getConnections().length).toBe(1000);
+
+			closeQueue.forEach(function(onClose){
+				onClose.firstCall.args[1]();
+			});
+
+			expect(myP.getConnections().length).toBe(0);
+		});
 	});
 
 	describe('events', function(){
