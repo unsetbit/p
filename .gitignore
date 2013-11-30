@@ -1,2 +1,4 @@
-node_modules
-build
+/.grunt
+/_SpecRunner.html
+/node_modules
+/build

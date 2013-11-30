@@ -6,6 +6,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-browserify');
   
   var config = {
@@ -96,12 +97,27 @@ module.exports = function(grunt) {
           RTCSessionDescription: true,
           webkitRTCPeerConnection: true
         }
-      },
-     
+      }
+    },
+
+    jasmine: {
+      test: {
+        src: '<%= properties.buildDir %>/p.js',
+        options: {
+          keepRunner: true,
+          specs: 'test/specs/*.js',
+          helpers: ['node_modules/sinon/pkg/sinon.js', 'test/helpers/*.js']
+        }
+      }
     }
   };
 
   grunt.registerTask('default', 'release');
+
+  grunt.registerTask('test', [
+    'browserify:p',
+    'jasmine'
+  ]);
 
   grunt.registerTask('dev', [
     'browserify:p', 
