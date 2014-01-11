@@ -1,11 +1,11 @@
 // Create the root node
-var alice = P.create();
+var alice = new P();
 
 // Establish a WebSocket connection to the onramp server
-var onramp = alice.to('ws://' + location.hostname + ':20500/');
+alice.connect('ws://' + location.hostname + ':20500/');
 
 // This is purely for logging so we can see when the onramp connection opened
-onramp.on('open', function(){
+alice.on('open', function(){
 	console.log('I connected to the onramp at ws://' + location.hostname + ':20500/');
 });
 
@@ -32,16 +32,17 @@ alice.on('connection', function(peer){
 
 			// arguments[1] is the remote address that can be used to connect to a peer
 			// through Bob
-			var otherPeer = peer.to(arguments[1]);
+			var otherPeer = new P();
+			otherPeer.connect(arguments[1], peer);
 			
 			// When successfully connected to a peer through Bob, introduce self
 			otherPeer.on('open', function(){
-				console.log("I'm introducing myself to Bob's friend (" + otherPeer.id + ")");
+				console.log("I'm introducing myself to Bob's friend (" + otherPeer.address + ")");
 				otherPeer.send("Hi, I'm Alice!");
 			});
 
 			otherPeer.on('message', function(message){
-				console.log("Bob's friend (" + otherPeer.id + ") says \"" + message + "\"");
+				console.log("Bob's friend (" + otherPeer.address + ") says \"" + message + "\"");
 			});
 		}
 	});

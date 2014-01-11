@@ -1,494 +1,452 @@
 ;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var Emitter = require('events').EventEmitter,
-	protocol = require('./protocol.js'),
-	uuidV4 = require('./utils.js').uuidV4,
-	MESSAGE_TYPE = protocol.MESSAGE_TYPE,
-	Connection;
+var utils = require('./utils.js'),
+  protocol = require('./protocol.js'),
+  MESSAGE_TYPE = protocol.MESSAGE_TYPE;
 
-Connection = module.exports = function(p){
-	Emitter.call(this);
-	this.p = p;
-	this.id = uuidV4();
-	this.relayedConnections = {};
-};
-Connection.prototype = Object.create(Emitter.prototype);
-
-Connection.prototype.getApi = function(){
-	var api = {};
-	api.on = this.on.bind(this);
-	api.removeListener = this.removeListener.bind(this);
-	api.to = this.to.bind(this);
-	api.send = this.send.bind(this);
-	api.relayed = this.relayed.bind(this);
-
-	Object.defineProperty(api, 'id', {
-		value: this.id
-	});
-
-	return api;
+var Connection = module.exports = function(emitter){
+  this.id = utils.uuidV4();
+  this.relayedConnections = {};
+  this.emitter = emitter;
 };
 
-Connection.prototype.to = function(remoteId){
-	var rtcConnection = this.createRtcConnection(this, remoteId),
-		api = rtcConnection.getApi();
-
-	api.on('open', this.connectionHandler.bind(this, api));
-	rtcConnection.createOffer();
-	
-	return api;
+Connection.prototype.sendRaw = function(){
+  throw new Error('Nothing is listening for message sent from this connection.');
 };
 
-Connection.prototype.send = function(message){
-	if(message instanceof ArrayBuffer){
-		this.sendToSocket(message);
-	} else {
-		this.sendProtocolMessage(MESSAGE_TYPE.PLAIN, Array.prototype.slice.call(arguments));
-	}
+Connection.prototype.emit = function(){
+  this.emitter.emit.apply(this.emitter, arguments);
 };
 
-Connection.prototype.relay = function(remoteId, message){
-	this.sendProtocolMessage(MESSAGE_TYPE.RELAY, remoteId, message);
+Connection.prototype.log = function(){};
+
+// Envelope is a message wrapped in an array with the protocol
+// specific parameters
+Connection.prototype.sendProtocolMessage = function(message){
+  var serializedMessage = JSON.stringify(message);
+  this.sendRaw(serializedMessage);
 };
 
-Connection.prototype.relayed = function(remoteId, message){
-	this.sendProtocolMessage(MESSAGE_TYPE.RELAYED, remoteId, message);
+// Sends direct message
+Connection.prototype.send = function(){
+  this.sendProtocolMessage([
+    MESSAGE_TYPE.DIRECT,
+    Array.prototype.slice.call(arguments)
+  ]);
 };
 
-Connection.prototype.sendProtocolMessage = function(messageType){
-	var message = Array.prototype.slice.call(arguments);
-    message = JSON.stringify(message);
-    this.sendToSocket(message);
+// Relays a message from one connection to another, acting as
+// a signalling channel.
+Connection.prototype.sendRelayMessage = function(address, message){
+  this.sendProtocolMessage([
+    MESSAGE_TYPE.RELAY,
+    address,
+    message
+  ]);
 };
 
-Connection.prototype.messageHandler = function(event){
-	if(event.data instanceof ArrayBuffer){
-		this.emit("array buffer", event.data);
-	} else if(typeof event.data === "string"){
-		var message = JSON.parse(event.data);
-		switch(message[0]){
-			case MESSAGE_TYPE.RELAYED:
-				this.relayedMessageHandler(
-					message[1], // remoteId
-					message[2]  // message
-				);
-			break;
-
-			case MESSAGE_TYPE.PLAIN:
-				this.emitPlainMessage(message[1]);
-				break;
-			
-			case MESSAGE_TYPE.RELAY:
-				this.relayMessageHandler(
-					message[1], // destinationId
-					message[2]  // message
-				);
-		}
-	}
+Connection.prototype.startRelayingFor = function(socket, connectionId){
+  this.relayedConnections[connectionId] = socket;
 };
 
-Connection.prototype.emitPlainMessage = function(args){
-	this.emit.apply(this, ['message'].concat(args));
+Connection.prototype.stopRelayingFor = function(socket, connectionId){
+  delete this.relayedConnections[connectionId];
 };
 
-Connection.prototype.relayMessageHandler = function(destinationId, message){
-	var destination = this.p.connectionMap[destinationId];
-    if(!destination) return;
+Connection.prototype.openHandler = function(){
+  this.emit('open');
+};
+
+Connection.prototype.closeHandler = function(){
+  this.emit('close');
+};
+
+Connection.prototype.errorHandler = function(data){
+  this.emit('error', data);
+};
+
+Connection.prototype.messageHandler = function(message){
+  var deserializedMessage;
+
+  if(message instanceof ArrayBuffer){
+    this.emit('message', message);
+  } else {
+    deserializedMessage = JSON.parse(message);
+    this.protocolMessageHandler(deserializedMessage);
+  }
+};
+
+Connection.prototype.protocolMessageHandler = function(message){
+  var messageType = message[0];
+  
+  switch(messageType){
+
+    // This is a message from the remote node to this one.
+    case MESSAGE_TYPE.DIRECT:
+      message[1].unshift('message');
+      this.emit.apply(this, message[1]);
+
+      break;
+
+    // The message was relayed by the peer on behalf of
+    // a third party peer, identified by "thirdPartyPeerId".
+    // This means that the peer is acting as a signalling
+    // channel on behalf of the third party peer.
+    case MESSAGE_TYPE.RELAYED:
+      this.relayedMessageHandler(
+        message[1], // thirdPartyPeerConnectionId
+        message[2]  // message
+      );
+
+      break;
+
+    // The message is intended for another peer, identified
+    // by "peerId", which is also connected to this node.
+    // This means that the peer is using this connection
+    // as a signalling channel in order to establish a connection
+    // to the other peer identified "peerId".
+    case MESSAGE_TYPE.RELAY:
+      this.relayMessageHandler(
+        message[1], // peerConnectionId
+        message[2]  // message
+      );
+
+      break;
+  }
+};
+
+// "this" is the signaling channel, relaying a message from one node to another.
+Connection.prototype.relayMessageHandler = function(connectionId, message){
+  var connection = this.relayedConnections[connectionId];
+  if(!connection) return;
+
+  connection.sendProtocolMessage([
+    MESSAGE_TYPE.RELAYED,
+    this.id,
+    message
+  ]);
+};
+
+Connection.prototype.relayedMessageHandler = function(thirdPartyId, message){
+  var messageType = message[0];
+  
+  switch(messageType){
+    // An initial connection request from a third party peer
+    case MESSAGE_TYPE.RTC_OFFER:
+      this.rtcOfferHandler(
+        thirdPartyId,
+        message[1], // description
+        message[2]  // data
+      );
+
+      break;
     
-    destination.relayed(
-        this.id,
-        message
-    );
+    // An answer to an RTC offer sent from this node
+    case MESSAGE_TYPE.RTC_ANSWER:
+      this.rtcAnswerHandler(
+        thirdPartyId,
+        message[1]  // description
+      );
+      
+      break;
+    
+    // An ICE candidate from the source node
+    case MESSAGE_TYPE.RTC_ICE_CANDIDATE:
+      this.rtcIceCandidateHandler(
+        thirdPartyId,
+        message[1]  // ICE candidate
+      );
+
+      break;
+  }
 };
 
-Connection.prototype.relayedMessageHandler = function(remoteId, message){
-	switch(message[0]){
-		case MESSAGE_TYPE.RTC_OFFER:
-			this.relayRtcOffer(
-				remoteId,
-				message[1], // description,
-				message[2]  // data
-			);
-			break;
-		case MESSAGE_TYPE.RTC_ANSWER:
-			this.relayRtcAnswer(
-				remoteId,
-				message[1] // description
-			);
-			break;
+Connection.prototype.rtcOfferHandler = function(thirdPartyId, description, data){
+  // We could be firewalling rtc offers according to information sent in data
 
-		case MESSAGE_TYPE.RTC_ICE_CANDIDATE:
-			this.relayRtcIceCandidate(
-				remoteId,
-				message[1]  // candidate
-			);	
-			break;
-	}
+  var connection = new P();
+  
+  connection.connect(thirdPartyId, this, true);
+  this.emitter.emit('connection', connection);
+  // Since we are accepting a connection, we create an answer to an offer
+  connection.connection.receiveOffer(description);
+  connection.connection.createAnswer();
 };
 
-Connection.prototype.connectionHandler = function(connection){
-	this.emit('connection', connection);
+Connection.prototype.rtcAnswerHandler = function(peerId, description){
+  var connection = this.relayedConnections[peerId];
+  if(!connection) return;
+
+  connection.receiveAnswer(description);
 };
 
-Connection.prototype.relayFor = function(connection, remoteId){
-	this.relayedConnections[remoteId] = connection;
+Connection.prototype.rtcIceCandidateHandler = function(peerId, iceCandidate){
+  var connection = this.relayedConnections[peerId];
+  if(!connection) return;
+
+  connection.addIceCandidate(iceCandidate);
+};
+},{"./protocol.js":6,"./utils.js":7}],2:[function(require,module,exports){
+var its = require('its');
+var Emitter = require('events').EventEmitter;
+var WebSocketConnection = require('./WebSocketConnection.js');
+var WebRtcConnection = require('./WebRtcConnection.js');
+var Connection = require('./Connection.js');
+
+var P = module.exports = function(emitter){
+  this.emitter = emitter || new Emitter();
 };
 
-Connection.prototype.cancelRelay = function(connection, remoteId){
-	var relayedConnection = this.relayedConnections[remoteId];
-	if(relayedConnection === connection){
-		delete this.relayedConnections[remoteId];	
-	}
-};
+P.WebSocketConnection = WebSocketConnection;
+P.WebRtcConnection = WebRtcConnection;
+P.Connection = Connection;
 
+P.prototype.log = function(){};
 
-Connection.prototype.relayRtcOffer = function(remoteId, description, data){
-	var self = this;
-	
-	this.rtcFirewall(data, function(){
-		var connection = self.createRtcConnection(self, remoteId),
-			api = connection.getApi();
-		
-		api.on('open', self.connectionHandler.bind(self, api));
-		connection.createAnswer(description);
-	});
-};
+P.prototype.connect = function(address, signalingChannel, bad){
+  its.defined(address);
 
-Connection.prototype.relayRtcAnswer = function(remoteId, description){
-	var connection = this.relayedConnections[remoteId];
-	if(!connection) return;
+  var connection;
 
-	connection.receiveAnswer(description);
-};
+  if(signalingChannel){
+    connection = new WebRtcConnection(this.emitter);
+    connection.connect(address, signalingChannel.connection || signalingChannel);
+    if(!bad) connection.createOffer();
+  } else {
+    connection = new WebSocketConnection(this.emitter);
+    connection.connect(address);
+  }
 
-Connection.prototype.relayRtcIceCandidate = function(remoteId, candidate){
-	var connection = this.relayedConnections[remoteId];
-	if(!connection) return;
-
-	connection.addIceCandidate(candidate);
-};
-
-Connection.prototype.rtcFirewall = function(data, accept){
-	accept();
-};
-
-},{"./protocol.js":6,"./utils.js":7,"events":9}],2:[function(require,module,exports){
-var Emitter = require('events').EventEmitter,
-	protocol = require('./protocol.js'),
-	MESSAGE_TYPE = protocol.MESSAGE_TYPE,
-	PROTOCOL_NAME = protocol.NAME,
-	SocketConnection = require('./SocketConnection.js'),
-	P;
-
-P = module.exports = function(emitter){
-	this.emitter = emitter;
-
-    this.connectionMap = {};
-    this.connectionList = [];
-};
-
-P.create = function(options){
-	options = options || {};
-	var emitter = options.emitter || new Emitter(),
-		anarch = new P(emitter);
-
-	return anarch.getApi();
-};
-
-P.prototype.getApi = function(){
-	var api = {};
-
-	api.on = this.on.bind(this);
-	api.removeListener = this.removeListener.bind(this);
-	api.to = this.to.bind(this);
-
-	Object.defineProperty(api, 'connections', {
-		get: this.getConnections.bind(this)
-	});
-
-	return api;
-};
-
-P.prototype.getConnections = function(){
-	return this.connectionList.slice(0);
-};
-
-P.prototype.to = function(address){
-	var socketConnection = SocketConnection.create(this, address),
-		api = socketConnection.getApi();
-
-	api.on('open', this.connectionHandler.bind(this, api));
-	return api;
+  this.connection = connection;
 };
 
 P.prototype.on = function(){
-	this.emitter.on.apply(this.emitter, arguments);
-	return this;
+  this.emitter.on.apply(this.emitter, arguments);
+  return this;
 };
 
 P.prototype.removeListener = function(){
-	this.emitter.removeListener.apply(this.emitter, arguments);
-	return this;
+  this.emitter.removeListener.apply(this.emitter, arguments);
+  return this;
 };
 
-P.prototype.connectionHandler = function(connection){
-	connection.on('connection', this.connectionHandler.bind(this));
-    connection.on('close', this.connectionCloseHandler.bind(this, connection));
+P.prototype.send = function(message){
+  if(message instanceof ArrayBuffer){
+    this.connection.sendRaw(message);
+  } else {
+    this.connection.send(message);
+  }
+};
+},{"./Connection.js":1,"./WebRtcConnection.js":3,"./WebSocketConnection.js":4,"events":9,"its":11}],3:[function(require,module,exports){
+var its = require('its'),
+  Emitter = require('events').EventEmitter,
+  protocol = require('./protocol.js'),
+  Connection = require('./Connection.js'),
+  MESSAGE_TYPE = protocol.MESSAGE_TYPE;
+  
+var WebRtcConnection = module.exports = function(emitter){
+  Connection.call(this, emitter);
+};
+WebRtcConnection.prototype = Object.create(Connection.prototype)
+
+WebRtcConnection.prototype.configuration = null;
+
+WebRtcConnection.prototype.constraints = {
+  optional: [{RtpDataChannels: true}]
+};
+
+WebRtcConnection.prototype.mediaConstraints = {
+    optional: [],
+    mandatory: {
+        OfferToReceiveAudio: false,
+        OfferToReceiveVideo: false
+    }
+};
+
+WebRtcConnection.prototype.RtcPeerConnection = webkitRTCPeerConnection;
+
+WebRtcConnection.prototype.connect = function(id, signalingSocket){
+  var self = this;
+
+  its.string(id);
+  its.defined(signalingSocket);
+
+  this.id = id;
+  this.signalingSocket = signalingSocket;
+
+  this.signalingSocket.startRelayingFor(this, id);
+
+  this.peerConnection = new this.RtcPeerConnection(this.configuration, this.constraints);
+  this.peerConnection.onicecandidate = this.iceCandidateHandler.bind(this);
+  this.peerConnection.oniceconnectionstatechange = this.iceConnectionStateChangeHandler.bind(this);
+
+  this.socket = this.peerConnection.createDataChannel(protocol.NAME, {reliable: false});
+  
+  this.socket.onopen = this.openHandler.bind(this);
+  this.socket.onerror = this.errorHandler.bind(this);
+  
+  this.socket.onclose = function(){
+    self.signalingSocket.stopRelayingFor(this, id);
+    self.closeHandler();
+  };
+  
+  this.socket.onmessage = function(event){
+    self.messageHandler(event.data);
+  };
+};
+
+WebRtcConnection.prototype.sendRaw = function(message){
+  switch(this.socket.readyState){
+    case 'connecting':
+      throw new Error('Can\'t send a message while RTCDataChannel connecting');
+    case 'open':
+      this.socket.send(message);
+      break;
+    case 'closing':
+    case 'closed':
+      throw new Error('Can\'t send a message while RTCDataChannel is closing or closed');
+  }
+
+  return this;
+};
+
+WebRtcConnection.prototype.iceConnectionStateChangeHandler = function(event){
+  switch(event.currentTarget.iceConnectionState){
+    case 'new': // gathering addresses and/or waiting for remote candidates to be supplied.
+      break;
+    case 'checking': // received remote candidates on at least one component, and is checking candidate pairs but has not yet found a connection. In addition to checking, it may also still be gathering.
+      break;
+    case 'connected': // found a usable connection for all components but is still checking other candidate pairs to see if there is a better connection. It may also still be gathering.
+      break;
+    case 'completed': // finished gathering and checking and found a connection for all components. Open issue: it is not clear how the non controlling ICE side knows it is in the state.
+      break;
+    case 'failed': // finished checking all candidate pairs and failed to find a connection for at least one component. Connections may have been found for some components.
+      break;
+    case 'disconnected': // liveness checks have failed for one or more components. This is more aggressive than failed, and may trigger intermittently (and resolve itself without action) on a flaky network.
+      break;
+    case 'closed': // shut down and is no longer responding to STUN requests.
+      break;
+  }
+};
+
+WebRtcConnection.prototype.iceCandidateHandler = function(event){
+  var candidate = event.candidate;
+  if(candidate){
+    this.signalingSocket.sendRelayMessage(this.id, [
+      MESSAGE_TYPE.RTC_ICE_CANDIDATE,
+      candidate
+    ]);
+  }
+};
+
+WebRtcConnection.prototype.addIceCandidate = function(candidate){
+  this.peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+};
+
+WebRtcConnection.prototype.createOffer = function(){
+  var peerConnection = this.peerConnection,
+    signalingSocket = this.signalingSocket,
+    id = this.id;
+  
+  peerConnection.createOffer(function(description){
+    peerConnection.setLocalDescription(description);
+    signalingSocket.sendRelayMessage(id, [
+      MESSAGE_TYPE.RTC_OFFER,
+      description
+    ]);
+  }, null, this.mediaConstraints);
+};
+
+WebRtcConnection.prototype.receiveOffer = function(remoteDescription){
+  var rtcSessionDescription = new RTCSessionDescription(remoteDescription);
+  this.peerConnection.setRemoteDescription(rtcSessionDescription);
+};
+
+WebRtcConnection.prototype.createAnswer = function(){
+  var peerConnection = this.peerConnection,
+    signalingSocket = this.signalingSocket,
+    id = this.id;
     
-    this.connectionMap[connection.id] = connection;
-    this.connectionList.push(connection);
+  peerConnection.createAnswer(function(description){
+    peerConnection.setLocalDescription(description);
     
-    this.emitter.emit("connection", connection);
+    signalingSocket.sendRelayMessage(id, [
+      MESSAGE_TYPE.RTC_ANSWER,
+      description
+    ]);
+  });
 };
 
-P.prototype.connectionCloseHandler = function(connection){
-    var index = this.connectionList.indexOf(connection);
-    this.connectionList.splice(index, 1);
-    delete this.connectionMap[connection.id];
-};
-},{"./SocketConnection.js":4,"./protocol.js":6,"events":9}],3:[function(require,module,exports){
-var protocol = require('./protocol.js'),
-	MESSAGE_TYPE = protocol.MESSAGE_TYPE,
-	PROTOCOL_NAME = protocol.NAME,
-	Connection = require('./Connection.js'),
-	RtcConnection;
-
-var DEFAULT_CONFIGURATION = null,
-	DEFAULT_CONSTRAINTS = {optional: [{RtpDataChannels: true}]},
-	MEDIA_CONSTRAINTS = {
-	    optional: [],
-	    mandatory: {
-	        OfferToReceiveAudio: false,
-	        OfferToReceiveVideo: false
-	    }
-	};
-
-RtcConnection = module.exports = function(connection, rtcConnection){
-	this.connection = connection;
-	connection.sendToSocket = this.sendToSocket.bind(this);
-	connection.createRtcConnection = RtcConnection.create;
-
-	this.rtcConnection = rtcConnection;
-	this.rtcConnection.onicecandidate = this.iceCandidateHandler.bind(this);
-	this.rtcConnection.oniceconnectionstatechange = this.iceConnectionStateChangeHandler.bind(this);
-
-	this.socket = rtcConnection.createDataChannel(PROTOCOL_NAME, {reliable: false});
-	this.socket.onmessage = this.connection.messageHandler.bind(this.connection);
-	this.socket.onopen = this.openHandler.bind(this);
-	this.socket.onclose = this.closeHandler.bind(this);
-	this.socket.onerror = this.errorHandler.bind(this);
+WebRtcConnection.prototype.receiveAnswer = function(description){
+  var rtcSessionDescription = new RTCSessionDescription(description);
+  this.peerConnection.setRemoteDescription(rtcSessionDescription);
 };
 
-RtcConnection.create = function(relay, remoteId, options){
-	options = options || {};
+WebRtcConnection.prototype.close = function(){
+  this.socket.close();
+};
+},{"./Connection.js":1,"./protocol.js":6,"events":9,"its":11}],4:[function(require,module,exports){
+var its = require('its'),
+  Connection = require('./Connection.js');
 
-	var configuration = options.configuration || DEFAULT_CONFIGURATION,
-		constraints = options.constraints || DEFAULT_CONSTRAINTS,
-		rtcConnection = options.rtcConnection || new webkitRTCPeerConnection(configuration, constraints),
-		connection = new Connection(relay.p),
-		peerConnection = new RtcConnection(connection, rtcConnection);
+var WebSocketConnection = module.exports = function(emitter){
+  Connection.call(this, emitter);
+};
+WebSocketConnection.prototype = Object.create(Connection.prototype);
 
-	peerConnection.setRelay(relay, remoteId);
+WebSocketConnection.prototype.WebSocket = WebSocket;
 
-	return peerConnection;
+WebSocketConnection.prototype.connect = function(address){
+  var self = this;
+
+  its.string(address);
+
+  this.address = address;
+  
+  this.socket = new this.WebSocket(this.address, 'P');
+  
+  this.socket.onopen = this.openHandler.bind(this);
+  this.socket.onclose = this.closeHandler.bind(this);
+  this.socket.onerror = this.errorHandler.bind(this);
+  
+  this.socket.onmessage = function(event){
+    self.messageHandler(event.data);
+  };
 };
 
-RtcConnection.prototype.getApi = function(){
-	var api = this.connection.getApi();
-	api.close = this.close.bind(this);
-	return api;
+WebSocketConnection.prototype.sendRaw = function(message){
+  switch(this.socket.readyState){
+    case WebSocket.CONNECTING:
+      throw new Error("Can't send a message while WebSocket connecting");
+
+    case WebSocket.OPEN:
+      this.socket.send(message);
+      break;
+
+    case WebSocket.CLOSING:
+    case WebSocket.CLOSED:
+      throw new Error("Can't send a message while WebSocket is closing or closed");
+  }
+
+  return this;
 };
 
-RtcConnection.prototype.close = function(){
-	this.rtcConnection.close();
+WebSocketConnection.prototype.close = function(){
+  this.socket.close();
 };
-
-RtcConnection.prototype.sendToSocket = function(message){
-	switch(this.socket.readyState){
-		case 'connecting':
-			throw new Error('Can\'t send a message while RTCDataChannel connecting');
-		case 'open':
-			this.socket.send(message);
-			break;
-		case 'closing':
-		case 'closed':
-			throw new Error('Can\'t send a message while RTCDataChannel is closing or closed');
-	}
-};
-
-RtcConnection.prototype.iceConnectionStateChangeHandler = function(event){
-	switch(event.currentTarget.iceConnectionState){
-		case 'new': // gathering addresses and/or waiting for remote candidates to be supplied.
-			break;
-		case 'checking': // received remote candidates on at least one component, and is checking candidate pairs but has not yet found a connection. In addition to checking, it may also still be gathering.
-			break;
-		case 'connected': // found a usable connection for all components but is still checking other candidate pairs to see if there is a better connection. It may also still be gathering.
-			break;
-		case 'completed': // finished gathering and checking and found a connection for all components. Open issue: it is not clear how the non controlling ICE side knows it is in the state.
-			break;
-		case 'failed': // finished checking all candidate pairs and failed to find a connection for at least one component. Connections may have been found for some components.
-			break;
-		case 'disconnected': // liveness checks have failed for one or more components. This is more aggressive than failed, and may trigger intermittently (and resolve itself without action) on a flaky network.
-			break;
-		case 'closed': // shut down and is no longer responding to STUN requests.
-			break;
-	}
-};
-
-RtcConnection.prototype.errorHandler = function(event){
-	this.connection.emit('error', event);
-};
-
-RtcConnection.prototype.openHandler = function(event){
-	this.connection.emit('open');
-};
-
-RtcConnection.prototype.closeHandler = function(event){
-	this.connection.emit('close');
-};
-
-RtcConnection.prototype.setRelay = function(relay, remoteId){
-	if(this.relay) this.relay.relay(this, this.remoteId);
-	
-	this.relay = relay;
-	this.remoteId = remoteId;
-	this.relay.relayFor(this, remoteId);
-};
-
-RtcConnection.prototype.iceCandidateHandler = function(event){
-	var candidate = event.candidate;
-	if(candidate){
-		this.relay.relay(this.remoteId,
-			[
-				MESSAGE_TYPE.RTC_ICE_CANDIDATE,
-				candidate
-			]
-		);
-	}
-};
-
-RtcConnection.prototype.createOffer = function(){
-	var self = this;
-	
-	this.rtcConnection.createOffer(function(description){
-		self.rtcConnection.setLocalDescription(description);
-		self.relay.relay(self.remoteId,
-			[
-				MESSAGE_TYPE.RTC_OFFER,
-				description
-			]
-		);
-	}, null, MEDIA_CONSTRAINTS);
-};
-
-RtcConnection.prototype.createAnswer = function(remoteDescription){
-	var self = this;
-
-	this.rtcConnection.setRemoteDescription(new RTCSessionDescription(remoteDescription));
-	this.rtcConnection.createAnswer(function(description){
-		self.rtcConnection.setLocalDescription(description);
-		self.relay.relay(self.remoteId,
-			[
-				MESSAGE_TYPE.RTC_ANSWER,
-				description
-			]
-		);
-	});
-};
-
-RtcConnection.prototype.receiveAnswer = function(description){
-	this.rtcConnection.setRemoteDescription(new RTCSessionDescription(description));
-};
-
-RtcConnection.prototype.addIceCandidate = function(candidate){
-	this.rtcConnection.addIceCandidate(new RTCIceCandidate(candidate));
-};
-},{"./Connection.js":1,"./protocol.js":6}],4:[function(require,module,exports){
-var RtcConnection = require('./RtcConnection.js'),
-	protocol = require('./protocol.js'),
-	MESSAGE_TYPE = protocol.MESSAGE_TYPE,
-	PROTOCOL_NAME = protocol.NAME,
-	DEFAULT_ADDRESS = "ws://127.0.0.1:20500/",
-	Connection = require('./Connection.js'),
-	SocketConnection;
-
-SocketConnection = module.exports = function(connection, socket){
-	this.connection = connection;
-	connection.sendToSocket = this.sendToSocket.bind(this);
-	connection.createRtcConnection = RtcConnection.create;
-	
-	this.socket = socket;
-	socket.onopen = this.openHandler.bind(this);
-	socket.onclose = this.closeHandler.bind(this);
-	socket.onerror = this.errorHandler.bind(this);
-	socket.onmessage = this.connection.messageHandler.bind(this.connection);
-};
-
-SocketConnection.create = function(p, address){
-	var socket = new WebSocket(address, PROTOCOL_NAME),
-		connection = new Connection(p),
-		socketConnection = new SocketConnection(connection, socket);
-	
-	socket.binaryType = "arraybuffer";
-	
-	return socketConnection;
-};
-
-SocketConnection.prototype.getApi = function(){
-	var api = this.connection.getApi();
-	api.close = this.close.bind(this);
-	return api;
-};
-
-RtcConnection.prototype.close = function(){
-	this.socket.close();
-};
-
-SocketConnection.prototype.sendToSocket = function(message){
-	switch(this.socket.readyState){
-		case WebSocket.CONNECTING:
-			throw new Error("Can't send a message while WebSocket connecting");
-
-		case WebSocket.OPEN:
-			this.socket.send(message);
-			break;
-
-		case WebSocket.CLOSING:
-		case WebSocket.CLOSED:
-			throw new Error("Can't send a message while WebSocket is closing or closed");
-	}
-
-	return this;
-};
-
-SocketConnection.prototype.close = function(){
-	this.socket.close();
-};
-
-SocketConnection.prototype.errorHandler = function(event){
-	this.connection.emit('error', event);
-};
-
-SocketConnection.prototype.closeHandler = function(event){
-	this.connection.emit('close');
-};
-
-SocketConnection.prototype.openHandler = function(event){
-	this.connection.emit('open');
-};
-},{"./Connection.js":1,"./RtcConnection.js":3,"./protocol.js":6}],5:[function(require,module,exports){
+},{"./Connection.js":1,"its":11}],5:[function(require,module,exports){
 window.P = require('./P.js');
 
 },{"./P.js":2}],6:[function(require,module,exports){
 exports.NAME = "p";
 exports.MESSAGE_TYPE = {
-	PLAIN: 0, // [0, message]
+  DIRECT: 0, // [0, message]
 
-	RTC_OFFER: 3, // [3, description, data]
-	RTC_ANSWER: 4, // [4, description]
-	RTC_ICE_CANDIDATE: 5, // [5, candidate]
+  RTC_OFFER: 3, // [3, description, data]
+  RTC_ANSWER: 4, // [4, description]
+  RTC_ICE_CANDIDATE: 5, // [5, candidate]
 
-	RELAY: 6, // [6, address, message]
-	RELAYED: 7 // [7, address, message]
+  RELAY: 6, // [6, address, message]
+  RELAYED: 7 // [7, address, message]
 };
 
 },{}],7:[function(require,module,exports){
@@ -1538,5 +1496,198 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-},{"_shims":8}]},{},[5])
+},{"_shims":8}],11:[function(require,module,exports){
+module.exports = require('./lib/its.js');
+},{"./lib/its.js":12}],12:[function(require,module,exports){
+// Helpers
+var slice = Array.prototype.slice;
+var toString = Object.prototype.toString;
+
+var templateRegEx = /%s/; // The template placeholder, used to split message templates
+
+/** A basic templating function. 
+  
+  Takes a string with 0 or more '%s' placeholders and an array to populate it with.
+
+  @param {String} messageTemplate A string which may or may not have 0 or more '%s' to denote argument placement
+  @param {Array} [messageArguments] Items to populate the template with
+
+  @example
+    templatedMessage("Hello"); // returns "Hello"
+    templatedMessage("Hello, %s", ["world"]); // returns "Hello, world"
+    templatedMessage("Hello, %s. It's %s degrees outside.", ["world", 72]); // returns "Hello, world. It's 72 degrees outside"
+
+  @returns {String} The resolved message
+*/
+var templatedMessage = function(messageTemplate, messageArguments){
+  var result = [],
+    messageArray = messageTemplate.split(templateRegEx),
+    index = 0,
+    length = messageArray.length;
+
+  for(; index < length; index++){
+    result.push(messageArray[index]);
+    result.push(messageArguments[index]);
+  }
+
+  return result.join('');
+};
+
+
+/** Generic check function which throws an error if a given expression is false
+*
+* The params list is a bit confusing, check the examples to see the available ways of calling this function
+*
+* @param {Boolean} expression The determinant of whether an exception is thrown
+* @param {String|Object} [messageOrErrorType] A message or an ErrorType object to throw if expression is false
+*   @param {String|Object} [messageOrMessageArgs] A message, message template, or a message argument
+* @param {...Object} [messageArgs] Arguments for a provided message template
+*
+* @returns {Boolean} Returns the expression passed  
+* @throws {Error}
+*
+* @example
+*   its(0 < 10); // returns true
+*   its(0 > 10); // throws Error with no message
+*   its(0 > 10, "Something went wrong!"); // throws Error with message: "Something went wrong!"
+*   its(0 > 10, "%s went %s!", "something", "wrong"); // throws Error with message: "Something went wrong!"
+*   its(0 > 10, RangeError, "%s went %s!", "something", "wrong"); // throws RangeError with message: "Something went wrong!"
+*   its(0 > 10, RangeError); // throws RangeError with no message
+*/
+var its = module.exports = function(expression, messageOrErrorType){
+  if(expression === false){
+    if(messageOrErrorType && typeof messageOrErrorType !== "string"){ // Check if custom error object passed
+      throw messageOrErrorType(arguments.length > 3 ? templatedMessage(arguments[2], slice.call(arguments,3)) : arguments[2]);  
+    } else {
+      throw new Error(arguments.length > 2 ? templatedMessage(messageOrErrorType, slice.call(arguments,2)) : messageOrErrorType); 
+    }
+  }
+  return expression;
+};
+
+/** Throws a TypeError if a given expression is false
+*
+* @param {Boolean} expression The determinant of whether an exception is thrown
+* @param {String} [message] A message or message template for the error (if it gets thrown)
+* @param {...Object} [messageArgs] Arguments for a provided message template
+*
+* @returns {Boolean} Returns the expression passed  
+* @throws {TypeError}
+*
+* @example
+*   its.type(typeof "Team" === "string"); // returns true
+*   its.type(typeof "Team" === "number"); // throws TypeError with no message
+*   its.type(void 0, "Something went wrong!"); // throws TypeError with message: "Something went wrong!"
+*   its.type(void 0, "%s went %s!", "something", "wrong"); // throws TypeError with message: "Something went wrong!"
+*/
+its.type = function(expression, message){
+  if(expression === false){
+    throw new TypeError(arguments.length > 2 ? templatedMessage(message, slice.call(arguments,2)) : message);
+  }
+  return expression;
+};
+
+// Helpers
+its.undefined = function(expression){
+  return its.type.apply(null, [expression === void 0].concat(slice.call(arguments, 1)));
+};
+
+its.null = function(expression){
+  return its.type.apply(null, [expression === null].concat(slice.call(arguments, 1)));
+};
+
+its.boolean = function(expression){
+  return its.type.apply(null, [expression === true || expression === false || toString.call(expression) === "[object Boolean]"].concat(slice.call(arguments, 1)));
+};
+
+its.array = function(expression){
+  return its.type.apply(null, [toString.call(expression) === "[object Array]"].concat(slice.call(arguments, 1)));
+};
+
+its.object = function(expression){
+  return its.type.apply(null, [expression === Object(expression)].concat(slice.call(arguments, 1)));
+};
+
+/** This block creates 
+* its.function
+* its.string
+* its.number
+* its.date
+* its.regexp
+*/
+(function(){
+  var types = [
+      ['args','Arguments'],
+      ['func', 'Function'], 
+      ['string', 'String'], 
+      ['number', 'Number'], 
+      ['date', 'Date'], 
+      ['regexp', 'RegExp']
+    ],
+    index = 0,
+    length = types.length;
+
+  for(; index < length; index++){
+    (function(){
+      var theType = types[index];
+      its[theType[0]] = function(expression){
+        return its.type.apply(null, [toString.call(expression) === '[object ' + theType[1] + ']'].concat(slice.call(arguments, 1)));
+      };
+    }());
+  }
+}());
+
+// optimization from underscore.js by documentcloud -- underscorejs.org
+if (typeof (/./) !== 'function') {
+  its.func = function(expression) {
+    return its.type.apply(null, [typeof expression === "function"].concat(slice.call(arguments, 1)));
+  };
+}
+
+/** Throws a ReferenceError if a given expression is false
+*
+* @param {Boolean} expression The determinant of whether an exception is thrown
+* @param {String} [message] A message or message template for the error (if it gets thrown)
+* @param {...Object} [messageArgs] Arguments for a provided message template
+*
+* @returns {Object} Returns the expression passed  
+* @throws {ReferenceError}
+*
+* @example
+*   its.defined("Something"); // returns true
+*   its.defined(void 0); // throws ReferenceError with no message
+*   its.defined(void 0, "Something went wrong!"); // throws ReferenceError with message: "Something went wrong!"
+*   its.defined(void 0, "%s went %s!", "something", "wrong"); // throws ReferenceError with message: "Something went wrong!"
+*/
+its.defined = function(expression, message){
+  if(expression === void 0){
+    throw new ReferenceError(arguments.length > 2 ? templatedMessage(message, slice.call(arguments,2)) : message);
+  }
+
+  return expression;
+};
+
+/** Throws a RangeError if a given expression is false
+*
+* @param {Boolean} expression The determinant of whether an exception is thrown
+* @param {String} [message] A message or message template for the error (if it gets thrown)
+* @param {...Object} [messageArgs] Arguments for a provided message template
+*
+* @returns {Boolean} Returns the expression passed  
+* @throws {RangeError}
+*
+* @example
+*   its.range(1 > 0); // returns true
+*   its.range(1 < 2); // throws RangeError with no message
+*   its.range(1 < 2 && 1 > 2, "Something went wrong!"); // throws RangeError with message: "Something went wrong!"
+*   its.range(1 < 2 && 1 > 2, "%s went %s!", "something", "wrong"); // throws RangeError with message: "Something went wrong!"
+*/
+its.range = function(expression, message){
+  if(expression === false){
+    throw new RangeError(arguments.length > 2 ? templatedMessage(message, slice.call(arguments,2)) : message);
+  }
+
+  return expression;
+};
+},{}]},{},[5])
 ;
