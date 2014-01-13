@@ -1,4 +1,4 @@
-describe('WebSocketConnection', function(){
+describe('WebRTCConnection', function(){
 	it('throws an error when instantiated without required fields', function(){
 
 	});

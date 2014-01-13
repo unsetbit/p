@@ -15,6 +15,7 @@ module.exports = function(grunt) {
       distDir: './dist',
       libDir: './lib',
       devDir: './dev',
+      testDir: './test',
       devServerDir: '<%= properties.buildDir %>/dev'
     },
     clean: {
@@ -26,6 +27,11 @@ module.exports = function(grunt) {
       p: {
         files: {
           '<%= properties.buildDir %>/p.js': '<%= properties.libDir %>/init.js'
+        }
+      },
+      pTest: {
+        files: {
+          '<%= properties.buildDir %>/p-test.js': '<%= properties.testDir %>/init.js'
         }
       }
     },
@@ -102,11 +108,11 @@ module.exports = function(grunt) {
 
     jasmine: {
       test: {
-        src: '<%= properties.buildDir %>/p.js',
+        src: '<%= properties.buildDir %>/p-test.js',
         options: {
           keepRunner: true,
           specs: 'test/specs/*.js',
-          helpers: ['node_modules/sinon/pkg/sinon.js', 'test/helpers/*.js']
+          helpers: ['node_modules/sinon/pkg/sinon.js']
         }
       }
     }
@@ -115,7 +121,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', 'release');
 
   grunt.registerTask('test', [
-    'browserify:p',
+    'browserify:pTest',
     'jasmine'
   ]);
 

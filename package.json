@@ -1,7 +1,7 @@
 {
   "name": "p",
-  "description": "Distributed",
-  "version": "0.2.0",
+  "description": "Framework for creating peer-to-peer browser networks",
+  "version": "0.3.0",
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.0",
