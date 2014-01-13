@@ -1,4 +1,24 @@
-<!doctype html>
-<title>Charlie</title>
-<script src="p.js"></script>
-<script src="charlie.js"></script>
+<!doctype html><title>Charlie</title>
+<script src="/p.js"></script>
+<script>
+	// Create the root node
+	var p = new P();
+	var onrampServerAddress = 'ws://' + location.hostname + ':20400/';
+
+	// Establish a WebSocket connection to the onramp server
+	console.log('connecting to onramp server at ' + onrampServerAddress);
+	var onramp = p.connect(onrampServerAddress);
+
+	p.on('connection', function(peer){
+		console.log(peer.address, ' connected');
+
+		peer.on('open', function(){
+			console.log(peer.address, ' <-- Hi, I\'m Charlie!');
+			peer.send('Hi, I\'m Charlie!');
+		});
+		
+		peer.on('message', function(message){
+			console.log(peer.address, ' --> ', message);
+		});
+	});
+</script>

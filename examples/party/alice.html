@@ -1,4 +1,52 @@
-<!doctype html>
-<title>Alice</title>
-<script src="p.js"></script>
-<script src="alice.js"></script>
+<!doctype html><title>Alice</title>
+<script src="/p.js"></script>
+<script>
+	// Create the root node
+	var p = new P();
+	var onrampServerAddress = 'ws://' + location.hostname + ':20500/';
+
+	// Establish a WebSocket connection to the onramp server
+	console.log('connecting to onramp server at ' + onrampServerAddress);
+	var onramp = p.connect(onrampServerAddress);
+
+	// Whenever Alice is connected to a new peer, this event will fire. This includes both
+	// WebRTC and WebSocket peers
+	onramp.on('connection', function(peer){
+		console.log(peer.address, ' connected via ', onramp.address);
+		
+		var isBob = false;
+
+		// Listen for messages from peers. Messages may have any number of arguments
+		// so we refer to them by index
+		peer.on('message', function(message){
+			console.log(peer.address, ' --> ', message);
+			
+			// Bob will welcome anyone who connects to him, this
+			// helps us identify which peer is Bob
+			if(message === "Welcome to the party, I'm Bob!"){
+				isBob = true;
+			
+			// After introducing himself, Bob will send his connections the remote addresses
+			// of all the other connections to him, we'll use this information to ask
+			// Bob to help connect us to those peers
+			} else if(isBob){
+				var peerAddress = message.split(' ')[0];
+				
+				// arguments[1] is the remote address that can be used to connect to a peer
+				// through Bob
+				console.log('connecting to peer at ' + peerAddress + ' via ' + peer.address);
+				var otherPeer = peer.connect(peerAddress);
+				
+				// When successfully connected to a peer through Bob, introduce self
+				otherPeer.on('open', function(){
+					console.log(otherPeer.address, ' <-- Hi, I\'m Alice!');
+					otherPeer.send('Hi, I\'m Alice!');
+				});
+
+				otherPeer.on('message', function(message){
+					console.log(otherPeer.address, ' --> ', message);
+				});
+			}
+		});
+	});
+</script>

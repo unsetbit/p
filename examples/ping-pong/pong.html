@@ -1,14 +1,33 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>Pong</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width">
-     </head>
-    <body>
-        <script src="p.js"></script>
-        <script src="pong.js"></script>
-    </body>
-</html>
+<!doctype html><title>Raw JS test</title>
+<script src="/p.js"></script>
+<script>
+	var p = new P();
+
+	var onrampServerAddress = 'ws://' + location.hostname + ':20500/';
+
+	// Establish a connection to an onramp server. The onramp
+	// server speaks the 'p' protocol and will allow us to make
+	// connections to peers.
+	console.log('connecting to onramp server at ' + onrampServerAddress);
+	var onramp = p.connect(onrampServerAddress);
+	
+	// Await for a connection to occur via the onramp peer.
+	onramp.on('connection', function(peer){
+		console.log(peer.address, ' connecting');
+		
+		// Whenever we receive a message, output it and respond
+		// with a 'pong!' after waiting for one second.
+		peer.on('message', function(message){
+			console.log(peer.address, ' --> ', message);
+			setTimeout(function(){
+				console.log(peer.address, ' <-- ', 'pong!');
+				peer.send('pong!');
+			}, 1000);
+		});
+	});
+
+	// Get notifications of closed connections
+	p.on('disconnection', function(peer){
+		console.log(peer.address, ' disconnected');
+	});
+</script>
