@@ -1,5 +1,5 @@
 {
-  "name": "p",
+  "name": "internet",
   "description": "Framework for creating peer-to-peer browser networks",
   "version": "0.3.0",
   "dependencies": {},
