@@ -5,22 +5,6 @@ describe('P', function(){
 		mockConnection,
 		originalWebSocketCreate = window.WebSocketConnection.create;
 
-	function createMockEmitter(){
-		return {
-			on: sinon.spy(),
-			removeListener: sinon.spy(),
-			emit: sinon.spy()
-		};
-	};
-
-	function createMockConnectionManager(){
-		return {
-			get: sinon.spy(),
-			add: sinon.spy(),
-			remove: sinon.spy(),
-		};
-	};
-
 	beforeEach(function(){
 		P = window.P;
 		mockEmitter = createMockEmitter();

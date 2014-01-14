@@ -7,42 +7,11 @@ describe('Connection', function(){
 		mockCreateWebRTCConnection,
 		originalCreateWebRTCConnection = Connection.createWebRTCConnection;
 
-	function createMockEmitter(){
-		return {
-			on: sinon.spy(),
-			removeListener: sinon.spy(),
-			emit: sinon.spy()
-		};
-	};
-
-	function createMockConnection(){
-		var mock = createMockEmitter();
-		mock.writeRelayedMessage = sinon.spy();
-		mock.readIceCandidate = sinon.spy();
-		mock.writeOffer = sinon.spy();
-		mock.readOffer = sinon.spy();
-		mock.readAnswer = sinon.spy();
-		mock.writeAnswer = sinon.spy();
-		
-		return mock;
-	};
-
-
-	function createMockConnectionManager(){
-		mockPeer = createMockConnection();
-		
-		return {
-			get: sinon.stub().returns(mockPeer),
-			add: sinon.spy(),
-			remove: sinon.spy(),
-		};
-	};
-
 	beforeEach(function(){
 		mockConnection = createMockConnection();
-
 		mockEmitter =  createMockEmitter();
 		mockConnectionManager = createMockConnectionManager();
+		mockPeer = mockConnectionManager.mockPeer;
 		connection = new Connection('123', mockConnectionManager, mockEmitter);
 		mockCreateWebRTCConnection = sinon.stub(Connection, 'createWebRTCConnection').returns(mockConnection);
 	});
@@ -68,10 +37,11 @@ describe('Connection', function(){
 	});
 
 	it('creates a web rtc connection using itself as a signaling channel when connect is called', function(){
-		var result = connection.connect('123');
+		var config = {address: '123'},
+			result = connection.connect(config);
 
 		expect(result).toBe(mockConnection);
-		expect(mockCreateWebRTCConnection.calledWith('123', mockConnectionManager, connection)).toBe(true);
+		expect(mockCreateWebRTCConnection.calledWith(config, mockConnectionManager, connection)).toBe(true);
 		expect(mockConnectionManager.add.calledWith(mockConnection)).toBe(true);
 		expect(mockConnection.on.calledWith('close')).toBe(true);
 		expect(mockEmitter.emit.calledWith('connection', mockConnection)).toBe(true);
@@ -163,8 +133,8 @@ describe('Connection', function(){
 	});
 
 	it('has all of the methods of the JSONProtocol object', function(){
-		for(var property in JSONProtocol){
-			if(JSONProtocol.hasOwnProperty(property)){
+		for(var property in JSONProtocol.prototype){
+			if(JSONProtocol.prototype.hasOwnProperty(property)){
 				expect(property in connection).toBe(true);
 			}
 		}
