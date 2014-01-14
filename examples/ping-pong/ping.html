@@ -13,36 +13,32 @@
 	
 	// Whenever another peer connects to the onramp server (or
 	// if there are already peers connected to it), it will send
-	// a message such as ['remote address', PEER_ADDRESS]. We can
-	// then ask the onramp server to connect to the peer at PEER_ADDRESS
-	onramp.on('message', function(message){
-		if(message[0] === 'remote address'){
-			var peerAddress = message[1];
-			
-			// Using the onramp connection as a signaling channel,
-			// connect to peer addresss.
-			console.log('connecting to peer at ' + peerAddress);
-			var peer = onramp.connect(peerAddress);
+	// a message with an address for the peer. We can then ask the 
+	// onramp server to connect to the peer at the address.
+	onramp.on('message', function(peerAddress){
+		// Using the onramp connection as a signaling channel,
+		// connect to peer addresss.
+		console.log('connecting to peer at ' + peerAddress);
+		var peer = onramp.connect(peerAddress);
 
-			// When the connection opens, send an initial ping
-			// to start the dialog
-			peer.on('open', function(){
-				console.log('connected to peer at ' + peerAddress);
+		// When the connection opens, send an initial ping
+		// to start the dialog
+		peer.on('open', function(){
+			console.log('connected to peer at ' + peerAddress);
+			peer.send('ping?');
+			console.log(peerAddress, ' <-- ', 'ping?');
+		});
+
+		// Whenever we receive a response from the peer,
+		// wait one second and respond with another ping.
+		peer.on('message', function(message){
+			console.log(peerAddress, ' --> ', message);
+
+			setTimeout(function(){
 				peer.send('ping?');
 				console.log(peerAddress, ' <-- ', 'ping?');
-			});
-
-			// Whenever we receive a response from the peer,
-			// wait one second and respond with another ping.
-			peer.on('message', function(message){
-				console.log(peerAddress, ' --> ', message);
-
-				setTimeout(function(){
-					peer.send('ping?');
-					console.log(peerAddress, ' <-- ', 'ping?');
-				}, 1000);
-			});
-		}
+			}, 1000);
+		});
 	});
 
 	// Get notifications of closed connections

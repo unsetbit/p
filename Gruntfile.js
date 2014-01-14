@@ -101,7 +101,11 @@ module.exports = function(grunt) {
           require: true,
           RTCIceCandidate: true,
           RTCSessionDescription: true,
-          webkitRTCPeerConnection: true
+          webkitRTCPeerConnection: true,
+          RTCPeerConnection: true,
+          mozRTCPeerConnection: true,
+          mozRTCSessionDescription: true,
+          mozRTCIceCandidate: true
         }
       }
     },

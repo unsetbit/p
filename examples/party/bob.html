@@ -4,36 +4,31 @@
 	var connections = [];
 
 	function onrampHandler(onramp){
-		onramp.on('message', function(message){
-			// If the onramp gives us remote addresses, connect to them
-			if(message[0] === "remote address"){
-				var peerAddress = message[1];
+		onramp.on('message', function(peerAddress){
+			console.log('connecting to ' + peerAddress + ' via ' + onramp.address);
+			// Connect to remote peer via the onramp
+			var peer = onramp.connect(peerAddress);
+			connections.push(peer);
+			
+			peer.on('message', function(message){
+				console.log(peer.address, ' --> ', message);
+			});
 
-				console.log('connecting to ' + peerAddress + ' via ' + onramp.address);
-				// Connect to remote peer via the onramp
-				var peer = onramp.connect(peerAddress);
-				connections.push(peer);
-				
-				peer.on('message', function(message){
-					console.log(peer.address, ' --> ', message);
+			peer.on('open', function(){
+				console.log(peer.address, ' <-- Welcome to the party, I\'m Bob!');
+				peer.send('Welcome to the party, I\'m Bob!');
+
+				connections.forEach(function(other){
+					if(other === peer) return;
+					
+					if(other.isOpen()){
+						console.log(peer.address, ' <-- ' + other.address + 'is also here.');
+						peer.send(other.address + ' is also here.');
+						console.log(other.address, ' <-- ' + peer.address + 'is also here.');
+						other.send(peer.address + ' is also here.');
+					}
 				});
-
-				peer.on('open', function(){
-					console.log(peer.address, ' <-- Welcome to the party, I\'m Bob!');
-					peer.send('Welcome to the party, I\'m Bob!');
-
-					connections.forEach(function(other){
-						if(other === peer) return;
-						
-						if(other.isOpen()){
-							console.log(peer.address, ' <-- ' + other.address + 'is also here.');
-							peer.send(other.address + ' is also here.');
-							console.log(other.address, ' <-- ' + peer.address + 'is also here.');
-							other.send(peer.address + ' is also here.');
-						}
-					});
-				});
-			}
+			});
 		})
 	}
 
