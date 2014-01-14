@@ -24,5 +24,10 @@
   "engines": {
     "node": "*"
   },
+  "scripts": {
+    "prepublish": "grunt test release",
+    "test": "grunt test",
+    "start": "grunt dev"
+  },
   "keywords": []
 }

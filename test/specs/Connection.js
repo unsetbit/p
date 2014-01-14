@@ -85,7 +85,7 @@ describe('Connection', function(){
 		
 		connection.readRelayedOffer('123', 'def', 123)
 	
-		expect(mockCreateWebRTCConnection.calledWith('123', mockConnectionManager, connection)).toBe(true);
+		expect(mockCreateWebRTCConnection.calledWith({address:'123'}, mockConnectionManager, connection)).toBe(true);
 	
 		expect(mockConnection.readOffer.calledWith('def', 123)).toBe(true);
 		expect(mockConnection.writeAnswer.calledOnce).toBe(true);
