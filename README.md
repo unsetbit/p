@@ -1,18 +1,44 @@
 # <a href="http://ozan.io/p">P</a> is for peer-to-peer networking with browsers
 
-P is a small framework to create browser-to-browser networks (as opposed to just a connection).
+P is a small framework used to create browser-to-browser networks (as opposed to just a connection). With P, you can:
 
-With P, you can:
-* Establish connections to other browsers using a WebSocket server.
-* Establish connections to other browsers using connections you've established to other browsers.
+* Connect to other browsers using [a simple WebSocket server](https://github.com/oztu/onramp).
+* Connect to other browsers using your established connections to other browsers. This is what makes P unique, it allows for transitive connections across peers, allowing easy creation of mesh networks.
 
 After a connection is established the middleman is no longer nescessary – no proxies are involved.
 
 This is made possible by an unstable and young technology -- [WebRTC](http://www.webrtc.org/). 
-Currently, only Chrome and Firefox can establish the data channels between browsers that P relies on.
+Currently, only Chrome and Firefox support this technology.
 
 [onramp](https://github.com/oztu/onramp), a simple WebSocket server, is used as the signaling channel 
 to establish initial connections.
+
+## API
+```javascript
+// Initializing
+var rootNode = P.create(); // create the root node
+
+// Connection management
+var webSocketNode = rootNode.connect(address); // connect to an onramp WebSocket server
+var webRtcNode = webSocketNode.connect(address); // connect to a peer using an onramp connection
+var webRtcNode = webRtcNode.connect(address); // connect to a peer using an existing peer connection
+anyNode.close(); // close the connection
+anyNode.isOpen(); // return true if the connection is open
+var nodeArray = anyNode.getPeers(); // returns an array of all peer connections
+
+// Sending and receiving messages
+webRtcNode.send(message); // send a message to a peer; can be json, string, or arraybuffer
+webRtcNode.on('message', function(message){}); // listens for messages from a peer
+webRtcNode.on('array buffer', function(arrayBuffer){}); // listens for array buffers from a peer
+
+// Events
+anyNode.on('connection', function(peerNode){}); // emitted when a connection is made via this peer
+anyNode.on('open', function(){}); // emitted when this connection is open and ready
+anyNode.on('close', function(){}); // emitted when this connection is closed
+anyNode.on('error', function(err){}); // listens for errors for this connection
+anyNode.removeListener(eventName, optionalCallback); // stops listening to an event
+```
+
 
 ## Documentation
 * [Example with walkthrough](http://ozan.io/p/#walkthrough)
