@@ -46,3 +46,6 @@ anyNode.removeListener(eventName, optionalCallback); // stops listening to an ev
 * [Cookbook](http://ozan.io/p/#cookbook)
 * [Contribute](http://ozan.io/p/#contribute)
 
+## Release Notes
+* 0.3 - Major refactor of internals and simplification of API, Firefox support, and respectable unit test coverage.
+* 0.2 - Public release
