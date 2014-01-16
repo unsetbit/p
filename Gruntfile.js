@@ -1,11 +1,11 @@
 module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
-    hug: {
+    browserify: {
       client: {
-        src: './script/**/*.js',
-        dest: 'build/script.js',
-        path: ['./components']
+        files: {
+          'build/script.js': ['script/*.js']
+        }
       }
     },
     concat:{
@@ -52,7 +52,6 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-hug');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-sass');
@@ -61,7 +60,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-reload');
+  grunt.loadNpmTasks('grunt-browserify');
 
   grunt.registerTask('dev', ['default', 'connect', 'watch']);
-  grunt.registerTask('default', ['clean', 'hug', 'concat', 'sass', 'uglify']);
+  grunt.registerTask('default', ['clean', 'browserify', 'concat', 'sass', 'uglify']);
 };

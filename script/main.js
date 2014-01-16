@@ -1,8 +1,7 @@
-require('jquery/jquery.js');
-require('../resource/bootstrap.min.js');
-require('../resource/prettify.js');
-require('angular/angular.js');
+require('../resource/angular.js');
 require('../resource/angularstrap.js');
+require('../resource/prettify.js');
+require('../resource/bootstrap.min.js');
 
 var app = angular.module('oztu', ['$strap.directives']);
 app.controller('pages', require('./pagesController.js'));
