@@ -54,13 +54,13 @@ body, html{
 	font-size:16px;
 	line-height:22px;
 	position:relative;
-	width:650px;
+	width:780px;
 	margin: 15px auto 0 auto;
 }
 
 .description-section{
 	margin:0 auto; 
-	width:650px; 
+	width:780px; 
 
 	&:first-child{
 		padding-top:0px;
@@ -72,7 +72,7 @@ body, html{
 }
 
 footer{
-	width:650px;
+	width:780px;
 	margin: 0 auto;
 	padding: 40px 0;
 	color:#aaa;
@@ -83,9 +83,15 @@ footer{
 
 nav{
 	div{
-		width:650px;
+		width:780px;
 		margin:0 auto;
 		font-size:16px;
+		span{
+			float:right;
+			display: inline-block;
+			top:9px;
+			position:relative;
+		}
 		a{
 			display:inline-block;
 			list-style: none;

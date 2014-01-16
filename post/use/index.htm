@@ -4,7 +4,7 @@
     P relies on very new technology, so it's a bit trickier to get started with than
     most libraries. You'll need 
     <a href="http://nodejs.org/">Node.js 0.10+</a> and 
-    <a href="http://google.com/chrome">Chrome 26+</a> before getting started.
+    <a href="http://google.com/chrome">Chrome 26+</a> or or <a href="www.getfirefox.com/‎">Firefox 23+</a> before getting started.
   </p>
 
   <h3>Installing and running onramp</h3>
@@ -15,7 +15,7 @@
   </p>
   <p>To install and run onramp, execute the following in your terminal (you may need <code>sudo</code>):</p>
   <pre class="prettyprint">
-npm install -g onramp; # install it to the PATH
+npm install -g onramp; # install it globally
 onramp; # start onramp with default settings
 </pre>
   <p>
@@ -30,146 +30,33 @@ onramp; # start onramp with default settings
     Include it in your application as you would any other script (i.e. &lt;script&gt;). P creates one global variable
     named "P".
   </p>
-  <p>
-    Current P only runs on Chrome with the <code>--enable-data-channels</code> flag. 
-    This is because P relies on a new technology, WebRTC Data Channels, which only implemented
-    in Chrome as of May 2013.
-  </p>
-  <p>
-    The simplest way to start Chrome with the data-channels flag is from the terminal.
-
-    <ul>
-      <li>
-        Windows: <code>[path to chrome.exe] --enable-data-channels</code>
-      </li>
-      <li> 
-        Mac: <code>open /Applications/Google\ Chrome.app --args --enable-data-channels</code>
-      </li>
-      <li>
-        Linux: <code>[chrome or chromium executable] --enable-data-channels</code>
-      </li>
-    </ul>
-  </p>
+  
 <div class="api">
   <h3>API</h3>
-  <ul class="unstyled well">
-    <li>
-      <b>P.create()</b> Create the root node
-      <ul>
-        <li><b>node.to(address)</b> Connect to another peer</li>
-        <li><b>node.send(arg1[, arg2, ...])</b> Send the peer a message</li>
-        <li><b>node.on(event, callback)</b> Listen to events from the peer</li>
-        <li><b>node.removeListener(event[, callback])</b> Remove event listeners from the peer</li>
-        <li><b>node.close()</b> Close the connection to the peer</li>
-      </ul>
-    </li>
-  </ul>
-
-<h4 style="margin-top:20px;"><code>P.create()</code></h4>
-<p>
-  Creates the root node of a P application used to connect to onramp servers.
-</p>
 <pre class="prettyprint lang-js">
-// Creates a root p instance
-rootNode = P.create();
+// Initializing
+var rootNode = P.create(); // create the root node
 
-// Listens for any connections to this browser
-rootNode.on('connection', function(connection){
-  console.log('new connection', connection);
-});
+// Connection management
+var webSocketNode = rootNode.connect(address); // connect to an onramp WebSocket server
+var webRtcNode = webSocketNode.connect(address); // connect to a peer using an onramp connection
+var webRtcNode = webRtcNode.connect(address); // connect to a peer using an existing peer connection
+anyNode.close(); // close the connection
+anyNode.isOpen(); // return true if the connection is open
+var nodeArray = anyNode.getPeers(); // returns an array of all peer connections
 
-// Connects to an on ramp server
-webSocketNode = rootNode.to('ws://localhost:20500');
+// Sending and receiving messages
+webRtcNode.send(message); // send a message to a peer; can be json, string, or arraybuffer
+webRtcNode.on('message', function(message){}); // listens for messages from a peer
+webRtcNode.on('array buffer', function(arrayBuffer){}); // listens for array buffers from a peer
+
+// Events
+anyNode.on('connection', function(peerNode){}); // emitted when a connection is made via this peer
+anyNode.on('open', function(){}); // emitted when this connection is open and ready
+anyNode.on('close', function(){}); // emitted when this connection is closed
+anyNode.on('error', function(err){}); // listens for errors for this connection
+anyNode.removeListener(eventName, optionalCallback); // stops listening to an event
 </pre>
 
-<h4><code>node.to(address)</code></h4>
-Uses one P node to connect to another. 
-<ul>
-  <li>The root node can connect to WebSocket nodes (i.e. onramp servers) via their WebSocket address.</li>
-  <li>WebSocket nodes can connect to WebRTC nodes with the remote connection's id as the address.</li>
-  <li>WebRTC nodes can connect to other WebRTC nodes with the remote connection's id as the address.</li>
-</ul>
-<pre class="prettyprint lang-js">
-// Use the root node to connect to the onramp server at address
-webSocketNode = rootNode.to(address);
-
-// Use the onramp node to connect to a remote WebRTC node with the 
-// connection id as the address
-webRtcNode = webSocketNode.to(address);
-
-// Use a WebRTC node to connect to a remote WebRTC node with the 
-// remote connection id as the address
-webRtcNode = webRtcNode.to(address);
-</pre>
-
-<h4><code>node.send(arg1[, arg2, ...])</code></h4>
-Send 1+ JSON-serializable arguments or 1 ArrayBuffer to the target node. The node will be able to receive the message
-by listening for the 'message' or 'array buffer' events.
-
-<pre class="prettyprint lang-js">
-// anyNode.send(arg1, arg2, ...);
-
-// Send a multi-parameter JSON message
-anyNode.send('Hello', {myName: 'Alice'});
-
-// Send an array buffer
-buffer = new ArrayBuffer(12);
-anyNode.send(buffer);
-</pre>
-
-<h4><code>node.on(event, callback)</code></h4>
-Bind a handler for one of these events:
-<ul>
-  <li>
-    <code>open</code>
-    fires when the connection to the node is established and ready. The callback is called
-    with no arguments.
-  </li>
-  <li>
-    <code>close</code>
-    fires when the connection to the node is closed. The callback is called
-    with no arguments.
-  </li>
-  <li>
-    <code>message</code>
-    fires when a JSON message from the peer is received. The callback may be called with
-    multiple arguments depending on the message.
-  </li>
-  <li>
-    <code>array buffer</code>
-    fires when an ArrayBuffer is received from the peer. The callback will be called with a single
-    argument.
-  </li>
-  <li>
-    <code>connection</code>
-    fires when a new connection is established via this peer. The callback will be called with a single
-    argument, the new node which has been connected to.
-  </li>
-</ul>
-<pre class="prettyprint lang-js">
-// Listen for connections made via this node
-anyNode.on('connection', function(anotherNode){
-
-  // Listen for messages from the new connection
-  anotherNode.on('message', function(){
-    console.log('arguments received', arguments);
-  });
-});
-</pre>
-
-<h4><code>node.removeListener(event[, callback])</code></h4>
-Removes an event handler. If a specific callback which was bound isn't provided, all callbacks for the
-even will be removed.
-<pre class="prettyprint lang-js">
-// Remove all existing message handlers.
-anyNode.removeListener('message');
-</pre>
-
-<h4><code>node.close()</code></h4>
-Closes a connection to a peer.
-<pre class="prettyprint lang-js">
-// Close the connection to the peer
-anyNode.close();
-</pre>
 </div>
 </section>

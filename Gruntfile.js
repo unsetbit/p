@@ -17,26 +17,22 @@ module.exports = function(grunt) {
     watch: {
       script: {
         files: ['./script/**/*'],
-        tasks: 'hug min reload'
+        tasks: ['hug', 'uglify']
       },
       style: {
         files: ['./style/**/*'],
-        tasks: 'concat sass reload'
+        tasks: ['concat', 'sass']
       },
       statics: {
         files: ['./index.html', './template/**/*'],
-        tasks: 'reload'
+        tasks: ['reload']
       }
     },
-    server: {
-      port: 81,
-      base: './'
-    },
-    reload: {
+    connect: {
+      server:{
         port: 80,
-        proxy: {
-            host: 'localhost'
-        }
+        base: './'
+      }
     },
     sass: {
       styles:{
@@ -45,7 +41,7 @@ module.exports = function(grunt) {
         }
       }
     },
-    min: {
+    uglify: {
       scripts: {
         src: './build/script.js',
         dest: './dist/script.js'
@@ -60,8 +56,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-sass');
+  grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-reload');
 
-  grunt.registerTask('dev', 'default server reload watch');
-  grunt.registerTask('default', 'clean hug concat sass min');
+  grunt.registerTask('dev', ['default', 'connect', 'watch']);
+  grunt.registerTask('default', ['clean', 'hug', 'concat', 'sass', 'uglify']);
 };

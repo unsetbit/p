@@ -30,8 +30,8 @@ onramp.on("connection", function(connection){
     // Don't send a connection its own id
     if(other === connection) return;
     
-    connection.send('remote address', other.id);
-    other.send('remote address', connection.id);
+    connection.send(other.id);
+    other.send(connection.id);
   });
 });  
 </pre>
@@ -43,48 +43,36 @@ onramp.on("connection", function(connection){
 
   <h4>ping.html</h4>
   <pre class="prettyprint linenums lang-html">
-&lt;!doctype html&gt;
-&lt;title&gt;Pong&lt;/title&gt;
+&lt;!doctype html&gt;&lt;title&gt;Ping?&lt;/title&gt;
 &lt;script src="p.js"&gt;&lt;/script&gt;
-&lt;script src="ping.js"&gt;&lt;/script&gt;
-</pre>
+&lt;script&gt;
+// 1. Create the root node of P
+var p = P.create();
 
-  <h4>ping.js</h4>
-  <pre class="prettyprint linenums lang-js">
-// Create the root node
-var pingingPeer = P.create();
+// 2. Connect to a WebSocket server
+var onrampServer = p.connect('ws://' + 
+                              location.hostname + 
+                              ':20500/');
 
-// Connect to the onramp server at its default location
-var webSocketPeer = pingingPeer.to('ws://127.0.0.1:20500/');
+onrampServer.on('message', function(peerAddress){
+  // 3. Connect to another browser which is 
+  //    connected to the WebSocket server
+  var peer = onramp.connect(peerAddress);
 
-// Listen to the messages the onramp server sends
-webSocketPeer.on('message', function(message, arg1){
-  // If we recieve a remote address, start pinging it
-  if(message === "remote address"){
-    var peerAddress = arg1;
-    startPinging(peerAddress);
-  }
-});
-
-function startPinging(address){
-  // Establish an RTC connection to the given address
-  var webRtcPeer = webSocketPeer.to(address);
-
-  // Once the channel is open, send the initial ping
-  webRtcPeer.on('open', function(){
-    webRtcPeer.send('Ping?');
+  // 4. When the connection opens, send a "ping?"
+  peer.on('open', function(){
+    peer.send('ping?');
   });
 
-  // Whenever we recieve a message, output it to the console,
-  // wait one second, then respond with another ping
-  webRtcPeer.on('message', function(message){
-    console.log('I received: ' + message);
-
+  // 5. When the peer replies send another "ping?"
+  peer.on('message', function(message){
     setTimeout(function(){
-      webRtcPeer.send('Ping?'); 
+      console.log('from peer: ' + message);
+      peer.send('ping?');
     }, 1000);
   });
-}
+});
+&lt;/script&gt;
 </pre>
 
   <h3>Pong Application</h3>
@@ -94,42 +82,37 @@ function startPinging(address){
 
   <h4>pong.html</h4>
   <pre class="prettyprint linenums lang-html">
-&lt;!doctype html&gt;
-&lt;title&gt;Pong&lt;/title&gt;
+&lt;!doctype html&gt;&lt;title&gt;Pong!&lt;/title&gt;
 &lt;script src="p.js"&gt;&lt;/script&gt;
-&lt;script src="pong.js"&gt;&lt;/script&gt;
-</pre>
+&lt;script&gt;
+// 1. Create the root node of P
+var p = P.create();
 
-  <h4>pong.js</h4>
-  <pre class="prettyprint linenums lang-js">
-// Create the root node
-var pongingPeer = P.create();
+// 2. Connect to a WebSocket server
+var onrampServer = p.connect('ws://' + 
+                              location.hostname + 
+                              ':20500/');
 
-// Connect to the onramp server at its default location
-var webSocketPeer = pongingPeer.to('ws://127.0.0.1:20500/');
-
-// Whenever an RTC connection is established to this browser via
-// the onramp server, call the handler function
-webSocketPeer.on('connection', handleRtcConnection);
-
-function handleRtcConnection(webRtcPeer){
-  webRtcPeer.on('message', function(message){
-    // Output the message
-    console.log('I received: ' + message);
-
-    // Wait one second then respond with a "pong"
+// 3. Await a peer to connect to this browser
+onrampServer.on('connection', function(peer){
+  
+  // 4. Whenever a peer sends a message, respond
+  //    with a "pong!"
+  peer.on('message', function(message){
     setTimeout(function(){
-      webRtcPeer.send('Pong!');
+      console.log('from peer: ' + message);
+      peer.send('pong!');
     }, 1000);
-  }); 
-}
+  });
+});
+&lt;/script&gt;
 </pre>
 
   <h3>Running the Example</h3>
   <p>
     Now that we know what all these pieces do, let's run it and see the results. 
     You'll need <a href="http://nodejs.org/">Node.js 0.10+</a> and 
-    <a href="http://google.com/chrome">Chrome 26+</a>. Once you have those installed,
+    <a href="http://google.com/chrome">Chrome 26+</a> or <a href="www.getfirefox.com/‎">Firefox 23+</a>. Once you have those installed,
     open up your console and execute the following (you may need <code>sudo</code>):
   </p>
 
@@ -141,37 +124,24 @@ p-examples; # start the example server in the foreground
 </pre>
 
   <p>
-    If all goes well, you should see <code>P example server running on localhost:20501</code> in your console.
-    If not, e-mail me (ozanturgut@gmail.com) and I'll try to help.
+    If all goes well, you should see <code>P example server running on localhost:20501</code>.
   </p>
-
   <p>
-    Now, find where your Chrome browser is installed and execute it with the <code>--enable-data-channels</code> flag.
-    The simplest way to do it is via the terminal:
-
-    <ul>
-      <li>
-        Windows: <code>[path to chrome.exe] --enable-data-channels</code>
-      </li>
-      <li> 
-        Mac: <code>open /Applications/Google\ Chrome.app --args --enable-data-channels</code>
-      </li>
-      <li>
-        Linux: <code>[chrome or chromium executable] --enable-data-channels</code>
-      </li>
-    </ul>
-  </p>
-
-  <p>
-    Finally,
-    navigate to <a href="http://localhost:20501/ping-pong/ping.html">http://localhost:20501/ping-pong/ping.html</a> in one tab
+    Finally, open <a href="http://localhost:20501/ping-pong/ping.html">http://localhost:20501/ping-pong/ping.html</a> in one tab
     and <a href="http://localhost:20501/ping-pong/pong.html">http://localhost:20501/ping-pong/pong.html</a> in another.
   </p>
 
   <p>
-    If you open up the JavaScript console in either of the tabs, you should notice <code>I received: Pong!</code> in the ping.html tab
-    and <code>I received: Ping?</code> in the pong.html tab. Congratulations! You've established a direct connection from
-    one browser to another, albeit on the same machine for the sake of simplicity.
+    If you open up the JavaScript console in either of the tabs, you should notice something like:
+<pre>
+...
+314b4feb-a959-4d26-9f93-00cc2b2170f4  <--  pong! 
+314b4feb-a959-4d26-9f93-00cc2b2170f4  -->  ping? 
+314b4feb-a959-4d26-9f93-00cc2b2170f4  <--  pong! 
+314b4feb-a959-4d26-9f93-00cc2b2170f4  -->  ping? 
+...
+</pre>
+   Congratulations! You've established a direct connection from one browser to another, albeit on the same machine for the sake of simplicity.
   </p>
 
   <h3>What Happened?</h3>

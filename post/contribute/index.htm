@@ -8,8 +8,8 @@
 
   <h2>Building from source</h2>
   <pre class="prettyprint lang-sh">
-npm install -g bower; # Installs Bower, a package manager used by P
 npm install -g grunt-cli; # Installs CLI for Grunt, the build engine for P
+npm install -g bower; # Installs Bower, a package manager used by P
 git clone git://github.com/oztu/p.git; # Clone the P repository
 cd p; # Enter into the P directory
 npm install; # Install dev dependencies
@@ -46,19 +46,19 @@ grunt dev; # Start the dev builder
             <b>Connection.js</b> &ndash; Base connection class for nodes
           </li>
           <li>
+            <b>ConnectionManager.js</b> &ndash; The shared list of peers across node
+          </li>
+          <li>
             <b>P.js</b> &ndash; The root of the project, exported as a global variable
           </li>
           <li>
-            <b>protocol.js</b> &ndash; The P protocol definition
+            <b>JSONProtocol.js</b> &ndash; The P protocol definition and helpers
           </li>
           <li>
-            <b>RtcConnection.js</b> &ndash; WebRTC-specific Connection
+            <b>WebRtcConnection.js</b> &ndash; WebRTC-specific Connection
           </li>
           <li>
-            <b>SocketConnection.js</b> &ndash; WebSocket-specific Connection
-          </li>
-          <li>
-            <b>utils.js</b> &ndash; Utilities used across the project
+            <b>WebSocketConnection.js</b> &ndash; WebSocket-specific Connection
           </li>
         </ul>
       </li>
@@ -66,7 +66,7 @@ grunt dev; # Start the dev builder
         <b>node_modules/</b> &ndash; Managed by NPM, a package manager
       </li>
       <li>
-        <b>component.json</b> &ndash; Bower component definition file
+        <b>bower.json</b> &ndash; Bower component definition file
       </li>
       <li>
         <b>Gruntfile.js</b> &ndash; Grunt task file, used to define build process

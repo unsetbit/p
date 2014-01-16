@@ -7,31 +7,24 @@
     established. By listening to the "remote address" message from the onramp connection,
     you can create connections to all other connections on the onramp server.
   </p>
-<pre class="prettyprint lang-js  pre-scrollable">
+<pre class="prettyprint lang-js">
 // An array in which we'll keep our peers
 var peers = [];
 
 // Sets the onramp address to the default
-var onrampAddress = "ws://127.0.0.1:20500";
+var onrampAddress = "ws://" + localhost.hostname + ":20500";
 
 // Create the root peer node
 var rootNode = P.create();
 
 // Connect to the websocket server, onramp, which will help
 // us connect to other browsers
-var onrampPeer = rootNode.to(onrampAddress);
+var onrampPeer = rootNode.connect(onrampAddress);
 
 // Listen to the messages the onramp server sends
-onrampPeer.on('message', function(){
-  
-  // If we recieve a remote address, establish a connection to it
-  if(arguments[0] === "remote address"){
-    // If the first argument is "remote address", the second 
-    // argument should be the address of the peer.
-    var peerAddress = arguments[1];
-
+onrampPeer.on('message', function(peerAddress){
     // Try to connect to the peer
-    var rtcPeer = onrampPeer.to(peerAddress);
+    var rtcPeer = onrampPeer.connect(peerAddress);
 
     // When the peer connection opens, add the peer to
     // the peers list
@@ -42,17 +35,17 @@ onrampPeer.on('message', function(){
 });
 </pre>
 
-  <h4><b>Emulating onramp's behavior with a WebRTC application</b></h4>
-  <p>
-    Having a WebRTC peer emulate onramp by broadcasting connection ids when
-    new connections are made allows for the network to grow without the help of
-    a publicly accessible server.
-  </p>
+<h4><b>Emulating onramp's behavior with a WebRTC application</b></h4>
+<p>
+  Having a WebRTC peer emulate onramp by broadcasting connection ids when
+  new connections are made allows for the network to grow without the help of
+  a publicly accessible server.
+</p>
 
-<pre class="prettyprint lang-js pre-scrollable">
+<pre class="prettyprint lang-js">
 // This script is for the node which will act as an "onramp" for other peers.
 // Sets the onramp address to the default
-var onrampAddress = "ws://127.0.0.1:20500";
+var onrampAddress = "ws://" + localhost.hostname + ":20500";
 
 // Create the root peer node
 var rootNode = P.create();
@@ -62,71 +55,59 @@ var rootNode = P.create();
 // id to the rest of the connections so everyone always
 // knows who is connected to the onramp
 rootNode.on('connection', function(connection){
-  rootNode.connections.forEach(function(other){
+  rootNode.getPeers().forEach(function(other){
     // Don't send a connection its own id
     if(other === connection) return;
     
-    connection.send('remote address', other.id);
-    other.send('remote address', connection.id);
+    connection.send(other.id);
+    other.send(connection.id);
   });
 });
 
 // Connect to the websocket server, onramp, which will help
 // us connect to other browsers
-rootNode.to(onrampAddress);
+rootNode.connect(onrampAddress);
 </pre>
 
-  <h4><b>Connecting to connections of a peer</b></h4>
-  <p>
-    We can use the pervious script's behavior to have clients expand their networks
-    via peers instead of a WebSocket onramp server.
-  </p>
-<pre class="prettyprint lang-js pre-scrollable">
+<h4><b>Connecting to connections of a peer</b></h4>
+<p>
+  We can use the pervious script's behavior to have clients expand their networks
+  via peers instead of a WebSocket onramp server.
+</p>
+<pre class="prettyprint lang-js">
 // This script uses the connection from the pervious script to expand it's network.
 
 // An array in which we'll keep our peers
 var peers = [];
 
 // Sets the onramp address to the default
-var onrampAddress = "ws://127.0.0.1:20500";
+var onrampAddress = "ws://" + localhost.hostname + ":20500";
 
 // Create the root peer node
 var rootNode = P.create();
 
 // Connect to the websocket server, onramp, which will help
 // us connect to other browsers
-var onrampPeer = rootNode.to(onrampAddress);
+var onrampPeer = rootNode.connect(onrampAddress);
 
 // Listen to the messages the onramp server sends
-onrampPeer.on('message', function(){
-  // If we recieve a remote address, establish a connection to it
-  if(arguments[0] === "remote address"){
-    // If the first argument is "remote address", the second 
-    // argument should be the address of the peer.
-    var peerAddress = arguments[1];
+onrampPeer.on('message', function(peerAddress){
+  // Connect to peer
+  var rtcPeer = onrampPeer.connect(peerAddress);
 
-    // Connect to peer
-    var rtcPeer = onrampPeer.to(peerAddress);
-
-    // Bind event handlers to peer
-    rtcPeerHandler(rtcPeer)
-  }
+  // Bind event handlers to peer
+  rtcPeerHandler(rtcPeer)
 });
 
 function rtcPeerHandler(rtcPeer){
   // Listen for 'remote address' messages from peer
-  rtcPeer.on('message', function(){
-    if(arguments[0] === 'remote address'){
-      // If the rtc peer provides a remote address, try
-      // to connect to it
-      var otherPeerAddress = arguments[1];
-      var peer = rtcPeer.to(otherPeerAddress);
+  rtcPeer.on('message', function(otherPeerAddress){
+    var peer = rtcPeer.connect(otherPeerAddress);
 
-      // When the connection opens, add it to the peers array
-      peer.on('open', function(){
-        peers.push(peer);
-      });
-    }
+    // When the connection opens, add it to the peers array
+    peer.on('open', function(){
+      peers.push(peer);
+    });
   });
 }
 </pre>

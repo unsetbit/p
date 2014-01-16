@@ -4,12 +4,16 @@
   "description": "p-website's Website",
   "private": true,
   "devDependencies": {
-    "grunt": "~0.3.15",
-    "grunt-hug": "~0.4.1",
-    "grunt-contrib-clean": "~0.3.1",
-    "grunt-contrib-copy": "~0.3.1",
-    "grunt-contrib-sass": "~0.1.3",
-    "grunt-reload": "~0.2.0"
+    "grunt": "~0.4.0",
+    "grunt-hug": "~0.5.1",
+    "grunt-contrib-clean": "~0.4.0",
+    "grunt-contrib-copy": "~0.4.0",
+    "grunt-contrib-sass": "~0.2.0",
+    "grunt-reload": "~0.2.0",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-connect": "~0.6.0",
+    "grunt-contrib-watch": "~0.5.3"
   },
   "scripts": {
     "test": "echo 0"
@@ -21,8 +25,7 @@
     "type": "git",
     "url": "https://github.com/oztu/p.git"
   },
-  "keywords": [
-  ],
+  "keywords": [],
   "author": {
     "name": "Ozan Turgut",
     "email": "ozanturgut@gmail.com",

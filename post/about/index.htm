@@ -2,29 +2,121 @@
   <h2>Peer-to-peer networking with browsers</h2>
 
   <p>
-  P is a small JavaScript library for creating peer-to-peer applications in browsers.
-  It allows for transitive connections across peers which makes certain network topologies, 
-  such mesh networks, easy to establish. Specifically, with P you can:
+  P is a small framework used to create browser-to-browser networks (as opposed to just a connection).
+  With P, you can:
   </p>
 
   <ul>
-    <li>Establish connections to other browsers using a WebSocket server.</li>
-    <li>Establish connections to other browsers using connections you've established to other browsers.</li>
+    <li>Connect to other browsers using <a href="https://github.com/oztu/onramp">a simple WebSocket server</a>.</li>
+    <li>Connect to other browsers using your established connections to other browsers. This is what
+      makes P unique, it allows for transitive connections across peers, allowing easy creation
+      of mesh networks.</li>
   </ul>
 
   <p>
-    After a connection is established the middleman is no longer nescessary &ndash; 
-    no proxies are involved.
+    After a connection is established the middleman is no longer 
+    nescessary &ndash; no proxies are involved.
   </p>
 
-  <h3>An Example of What's Possible</h3>
+  <h3>A basic example</h3>
+  <p>This example involves two html files intended to be 
+    loaded of two different machines (you could also load them
+    in two different tabs if you wanted). 
+  </p>
   <p>
-    Let's say we have two WebSocket servers: onramp-1 and onramp-2. 
-    Alice can only connect to onramp-1 and Charlie can only connect to onramp-2. 
-    Bob can connect to both. 
-    Using P, we can establish connections between Bob and Alice, and
-    Bob and Charlie with the help of the onramp servers. 
-    We can then establish a connection between Alice and Charlie with the help of Bob.
+   <em>ping.html</em> will connect to an onramp server and await for
+    the addresses of other peers. When it receives them, it'll
+    ask to be connected to them. Once connected it will send a
+    "ping?" message and continue to respond to any subsequent
+    message from it's peer with a "ping?".
+  </p>
+  <p>
+    <em>pong.html</em> will also connect to the same onramp server and
+    await for a connection to be made to it. Whenever it receives
+    a message from a peer, it'll respond with "pong".
+  </p>
+<div style="float:left; width:370px; margin:10px;">
+<h4>ping.html</h4>
+<pre class="prettyprint lang-js">
+&lt;!doctype html&gt;&lt;title&gt;Ping?&lt;/title&gt;
+&lt;script src="p.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+// 1. Create the root node of P
+var p = P.create();
+
+// 2. Connect to a WebSocket server
+var onrampServer = p.connect('ws://' + 
+                              location.hostname + 
+                              ':20500/');
+
+onrampServer.on('message', function(peerAddress){
+  // 3. Connect to another browser which is 
+  //    connected to the WebSocket server
+  var peer = onramp.connect(peerAddress);
+
+  // 4. When the connection opens, send a "ping?"
+  peer.on('open', function(){
+    peer.send('ping?');
+  });
+
+  // 5. When the peer replies send another "ping?"
+  peer.on('message', function(message){
+    setTimeout(function(){
+      console.log('from peer: ' + message);
+      peer.send('ping?');
+    }, 1000);
+  });
+});
+&lt;/script&gt;
+</pre>
+</div>
+<div style="float:left; width:370px; margin:10px;">
+<h4>pong.html</h4>
+<pre class="prettyprint lang-js">
+&lt;!doctype html&gt;&lt;title&gt;Pong!&lt;/title&gt;
+&lt;script src="p.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+// 1. Create the root node of P
+var p = P.create();
+
+// 2. Connect to a WebSocket server
+var onrampServer = p.connect('ws://' + 
+                              location.hostname + 
+                              ':20500/');
+
+// 3. Await a peer to connect to this browser
+onrampServer.on('connection', function(peer){
+  
+  // 4. Whenever a peer sends a message, respond
+  //    with a "pong!"
+  peer.on('message', function(message){
+    setTimeout(function(){
+      console.log('from peer: ' + message);
+      peer.send('pong!');
+    }, 1000);
+  });
+});
+&lt;/script&gt;
+</pre>
+</div>
+<div style="clear:both"></div>
+  <h3>An example of what's possible</h3>
+  <p>
+    Let's assume the following situation:
+  </p>
+  <ul>
+    <li>There are two WebSocket servers running onramp: onramp-1 and onramp-2.</li>
+    <li>Alice can only directly connect to onramp-1.</li>
+    <li>Charlie can only directly connect to onramp-2.</li>
+    <li>Bob can connect to both onramp-1 and onramp-2.</li>
+    <li>Alice wants to communicate directly with Charlie.</li>
+  </ul>
+  <p>
+    Using P, Alice and Bob can connect to each other using onramp-1 (similar to how
+    ping.html and pong.html connected in the previous example). Bob and Charlie can also
+    connect to each other using onramp-2. Finally, Alice can connect to Charlie using Bob.
+    Once Alice is connected to Charlie, they no longer need to be connect to onramp-1, onramp-2,
+    or Bob. They can live happily ever after.
   </p>
   <p>
     <a href="resource/image/party-example.png">
@@ -42,7 +134,7 @@
 
   <p>
     This is made possible by an unstable and young technology -- <a href="http://www.webrtc.org/">WebRTC</a>. 
-    Currently, only Google Chrome can establish the data channels between browsers 
+    Currently, only Chrome and Firefox can establish the data channels between browsers 
     that P relies on.
   </p>
 

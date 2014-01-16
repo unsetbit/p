@@ -14,7 +14,7 @@
   <h3>Running the Example</h3>
   <p>
     You'll first need <a href="http://nodejs.org/">Node.js 0.10+</a> and 
-    <a href="http://google.com/chrome">Chrome 26+</a>. Once you have those installed,
+    <a href="http://google.com/chrome">Chrome 26+</a> or <a href="www.getfirefox.com/‎">Firefox 23+</a>. Once you have those installed,
     open up your terminal and execute the following (you may need <code>sudo</code>):
   </p>
 
@@ -27,29 +27,31 @@ p-examples; # start the example server in the foreground
 </pre>
 
   <p>
-    Now, find where your Chrome browser is installed and execute it with the <code>--enable-data-channels</code> flag.
-    The simplest way to do it is via the terminal:
-
+    Now, open these documents in different tabs:
     <ul>
       <li>
-        Windows: <code>[path to chrome.exe] --enable-data-channels</code>
-      </li>
-      <li> 
-        Mac: <code>open /Applications/Google\ Chrome.app --args --enable-data-channels</code>
+        <a href="http://localhost:20501/party/bob.html">http://localhost:20501/party/bob.html</a>
       </li>
       <li>
-        Linux: <code>[chrome or chromium executable] --enable-data-channels</code>
+        <a href="http://localhost:20501/party/alice.html">http://localhost:20501/party/alice.html</a>
+      </li>
+      <li>
+        <a href="http://localhost:20501/party/charlie.html">http://localhost:20501/party/charlie.html</a>
       </li>
     </ul>
   </p>
   <p>
-    Finally, open <a href="http://localhost:20501/party/bob.html">http://localhost:20501/party/bob.html</a>, 
-    <a href="http://localhost:20501/party/alice.html">http://localhost:20501/party/alice.html</a>, and
-    <a href="http://localhost:20501/party/charlie.html">http://localhost:20501/party/charlie.html</a>.
-  </p>
-  <p>
-    If you check the JavaScript console for charlie.html, you should see "[a unique id] said Hi, I'm Alice!".
-    This means that Alice was successfully able to connect to Charlie.
+    If you now check the JavaScript console for alice.html, you should see:
+    <pre>
+connecting to onramp server at ws://localhost:20500/
+476a7fb3-a974-4382-9702-b05c3eefb28f  connected via  ws://localhost:20500/
+476a7fb3-a974-4382-9702-b05c3eefb28f  -->  Welcome to the party, I'm Bob!
+476a7fb3-a974-4382-9702-b05c3eefb28f  -->  026395ed-50dc-4198-9be6-f9bc6cbdbfbb is also here.
+connecting to peer at 026395ed-50dc-4198-9be6-f9bc6cbdbfbb via 476a7fb3-a974-4382-9702-b05c3eefb28f
+026395ed-50dc-4198-9be6-f9bc6cbdbfbb  <-- Hi, I'm Alice!
+026395ed-50dc-4198-9be6-f9bc6cbdbfbb  -->  Hi, I'm Charlie!</pre>
+  
+  This means that Alice was successfully able to connect to Charlie.
   </p>
 
   <h3>What Happened</h3>
@@ -63,21 +65,21 @@ p-examples; # start the example server in the foreground
     You can read each of the scripts to see what they were doing:
     <ul>
       <li>
-        <a href="https://raw.github.com/oztu/p/master/examples/party/bob.js">bob.js</a>,
+        <a href="https://github.com/oztu/p/blob/master/examples/party/bob.html">bob.html</a>,
         connected to both onramp servers and used them to establish connections to both
         Alice and Charlie.
       </li>
       <li>
-        <a href="https://raw.github.com/oztu/p/master/examples/party/alice.js">alice.js</a>,
+        <a href="https://github.com/oztu/p/blob/master/examples/party/alice.html">alice.html</a>,
         connected to onramp-1, then accepted a connection Bob, and finally asked to be connected
         to Charlie with the help of Bob.
       </li>
       <li>
-        <a href="https://raw.github.com/oztu/p/master/examples/party/charlie.js">charlie.js</a>,
+        <a href="https://github.com/oztu/p/blob/master/examples/party/Charlie.html">charlie.html</a>,
         connected to onramp-2, then accepted any connection requests made to it.
       </li>
       <li>
-        <a href="https://raw.github.com/oztu/onramp/master/bin/onramp">onramp</a>,
+        <a href="https://github.com/oztu/onramp/blob/master/bin/onramp">onramp</a>,
         a basic WebSocket server which helps browsers connect to each other.
       </li>
     </ul>
