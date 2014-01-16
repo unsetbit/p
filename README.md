@@ -3,7 +3,7 @@
 P is a small framework used to create browser-to-browser networks (as opposed to just a connection). With P, you can:
 
 * Connect to other browsers using [a simple WebSocket server](https://github.com/oztu/onramp).
-* Connect to other browsers using your established connections to other browsers. This is what makes P unique, it allows for transitive connections across peers, allowing easy creation of mesh networks.
+* Connect to other browsers using your established connections to other browsers. This is what makes P unique: it allows for transitive connections across peers, allowing easy creation of mesh networks.
 
 After a connection is established the middleman is no longer nescessary – no proxies are involved.
 
