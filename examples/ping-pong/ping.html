@@ -19,7 +19,7 @@
 		// Using the onramp connection as a signaling channel,
 		// connect to peer addresss.
 		console.log('connecting to peer at ' + peerAddress);
-		var peer = onramp.connect(peerAddress);
+		var peer = onramp.connect({ address: peerAddress, offerData: "Hi!" });
 
 		// When the connection opens, send an initial ping
 		// to start the dialog

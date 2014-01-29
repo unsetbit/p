@@ -12,7 +12,7 @@ describe('Connection', function(){
 		mockEmitter =  createMockEmitter();
 		mockConnectionManager = createMockConnectionManager();
 		mockPeer = mockConnectionManager.mockPeer;
-		connection = new Connection('123', mockConnectionManager, mockEmitter);
+		connection = new Connection('123', mockConnectionManager, {emitter: mockEmitter});
 		mockCreateWebRTCConnection = sinon.stub(Connection, 'createWebRTCConnection').returns(mockConnection);
 	});
 
@@ -22,7 +22,7 @@ describe('Connection', function(){
 
 	describe('constructor', function(){
 		it('creates a Connection object when called', function(){
-			var connection = new Connection('123', mockConnectionManager, mockEmitter);
+			var connection = new Connection('123', mockConnectionManager, {emitter:mockEmitter});
 			expect(connection instanceof Connection).toBe(true);
 			expect(connection instanceof JSONProtocol).toBe(true);
 		});
@@ -87,7 +87,7 @@ describe('Connection', function(){
 	
 		expect(mockCreateWebRTCConnection.calledWith({address:'123'}, mockConnectionManager, connection)).toBe(true);
 	
-		expect(mockConnection.readOffer.calledWith('def', 123)).toBe(true);
+		expect(mockConnection.readOffer.calledWith('def')).toBe(true);
 		expect(mockConnection.writeAnswer.calledOnce).toBe(true);
 		expect(mockConnectionManager.add.calledWith(mockConnection)).toBe(true);
 		expect(mockConnection.on.calledWith('close')).toBe(true);
