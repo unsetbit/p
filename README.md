@@ -26,6 +26,17 @@ anyNode.close(); // close the connection
 anyNode.isOpen(); // return true if the connection is open
 var nodeArray = anyNode.getPeers(); // returns an array of all peer connections
 
+// Firewalling connections
+var protectedNode = P.create(function(offerData){
+	// Only accept RTC connection offers which send 'secret' as the offer data
+	// this firewall rule will apply to any child nodes as well
+	return offerData === 'secret';
+});
+
+// Send offerData with a connection request
+anyNode.connect({address: address, offerData: 'secret'});
+
+
 // Sending and receiving messages
 webRtcNode.send(message); // send a message to a peer; can be json, string, or arraybuffer
 webRtcNode.on('message', function(message){}); // listens for messages from a peer
@@ -47,5 +58,6 @@ anyNode.removeListener(eventName, optionalCallback); // stops listening to an ev
 * [Contribute](http://ozan.io/p/#contribute)
 
 ## Release Notes
+* 0.3.1 - Added 'firewall' option to firewall RTC requests.
 * 0.3 - Major refactor of internals and simplification of API, Firefox support, and respectable unit test coverage.
 * 0.2 - Public release
