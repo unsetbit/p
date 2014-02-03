@@ -1,7 +1,7 @@
 {
   "name": "internet",
   "description": "Framework for creating peer-to-peer browser networks",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.0",
@@ -30,5 +30,15 @@
     "test": "grunt test",
     "start": "grunt dev"
   },
-  "keywords": ["peer-to-peer", "websockets", "webrtc", "p2p", "plink", "p", "onramp", "mesh", "distributed"]
+  "keywords": [
+    "peer-to-peer",
+    "websockets",
+    "webrtc",
+    "p2p",
+    "plink",
+    "p",
+    "onramp",
+    "mesh",
+    "distributed"
+  ]
 }
