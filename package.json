@@ -20,6 +20,7 @@
     "its": "~1.0.2",
     "sinon": "~1.7.3"
   },
+  "main": "./index.js",
   "optionalDependencies": {},
   "engines": {
     "node": "*"
@@ -29,5 +30,5 @@
     "test": "grunt test",
     "start": "grunt dev"
   },
-  "keywords": []
+  "keywords": ["peer-to-peer", "websockets", "webrtc", "p2p", "plink", "p", "onramp", "mesh", "distributed"]
 }
