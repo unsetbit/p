@@ -52,7 +52,7 @@ var onrampServer = p.connect('ws://' +
 onrampServer.on('message', function(peerAddress){
   // 3. Connect to another browser which is 
   //    connected to the WebSocket server
-  var peer = onramp.connect(peerAddress);
+  var peer = onrampServer.connect(peerAddress);
 
   // 4. When the connection opens, send a "ping?"
   peer.on('open', function(){
