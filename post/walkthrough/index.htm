@@ -43,35 +43,53 @@ onramp.on("connection", function(connection){
 
   <h4>ping.html</h4>
   <pre class="prettyprint linenums lang-html">
-&lt;!doctype html&gt;&lt;title&gt;Ping?&lt;/title&gt;
-&lt;script src="p.js"&gt;&lt;/script&gt;
+&lt;!doctype html&gt;&lt;title&gt;Ping&lt;/title&gt;
+&lt;script src="/p.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-// 1. Create the root node of P
-var p = P.create();
+	var p = P.create();
 
-// 2. Connect to a WebSocket server
-var onrampServer = p.connect('ws://' + 
-                              location.hostname + 
-                              ':20500/');
+	var onrampServerAddress = 'ws://' + location.hostname + ':20500/';
 
-onrampServer.on('message', function(peerAddress){
-  // 3. Connect to another browser which is 
-  //    connected to the WebSocket server
-  var peer = onramp.connect(peerAddress);
+	// Establish a connection to an onramp server. The onramp
+	// server speaks the 'p' protocol and will allow us to make
+	// connections to peers.
+	console.log('connecting to onramp server at ' + onrampServerAddress);
+	var onramp = p.connect(onrampServerAddress);
 
-  // 4. When the connection opens, send a "ping?"
-  peer.on('open', function(){
-    peer.send('ping?');
-  });
+	// Whenever another peer connects to the onramp server (or
+	// if there are already peers connected to it), it will send
+	// a message with an address for the peer. We can then ask the 
+	// onramp server to connect to the peer at the address.
+	onramp.on('message', function(peerAddress){
+		// Using the onramp connection as a signaling channel,
+		// connect to peer addresss.
+		console.log('connecting to peer at ' + peerAddress);
+		var peer = onramp.connect({ address: peerAddress, offerData: "Hi!" });
 
-  // 5. When the peer replies send another "ping?"
-  peer.on('message', function(message){
-    setTimeout(function(){
-      console.log('from peer: ' + message);
-      peer.send('ping?');
-    }, 1000);
-  });
-});
+		// When the connection opens, send an initial ping
+		// to start the dialog
+		peer.on('open', function(){
+			console.log('connected to peer at ' + peerAddress);
+			peer.send('ping?');
+			console.log(peerAddress, ' <-- ', 'ping?');
+		});
+
+		// Whenever we receive a response from the peer,
+		// wait one second and respond with another ping.
+		peer.on('message', function(message){
+			console.log(peerAddress, ' --> ', message);
+
+			setTimeout(function(){
+				peer.send('ping?');
+				console.log(peerAddress, ' <-- ', 'ping?');
+			}, 1000);
+		});
+	});
+
+	// Get notifications of closed connections
+	p.on('disconnection', function(peer){
+		console.log(peer.address, ' disconnected');
+	});
 &lt;/script&gt;
 </pre>
 
