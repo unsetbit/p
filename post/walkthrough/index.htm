@@ -100,29 +100,38 @@ onramp.on("connection", function(connection){
 
   <h4>pong.html</h4>
   <pre class="prettyprint linenums lang-html">
-&lt;!doctype html&gt;&lt;title&gt;Pong!&lt;/title&gt;
-&lt;script src="p.js"&gt;&lt;/script&gt;
+&lt;!doctype html&gt;&lt;title&gt;Pong&lt;/title&gt;
+&lt;script src="/p.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-// 1. Create the root node of P
-var p = P.create();
+	var p = P.create();
 
-// 2. Connect to a WebSocket server
-var onrampServer = p.connect('ws://' + 
-                              location.hostname + 
-                              ':20500/');
+	var onrampServerAddress = 'ws://' + location.hostname + ':20500/';
 
-// 3. Await a peer to connect to this browser
-onrampServer.on('connection', function(peer){
-  
-  // 4. Whenever a peer sends a message, respond
-  //    with a "pong!"
-  peer.on('message', function(message){
-    setTimeout(function(){
-      console.log('from peer: ' + message);
-      peer.send('pong!');
-    }, 1000);
-  });
-});
+	// Establish a connection to an onramp server. The onramp
+	// server speaks the 'p' protocol and will allow us to make
+	// connections to peers.
+	console.log('connecting to onramp server at ' + onrampServerAddress);
+	var onramp = p.connect(onrampServerAddress);
+	
+	// Await for a connection to occur via the onramp peer.
+	onramp.on('connection', function(peer){
+		console.log(peer.address, ' connecting');
+		
+		// Whenever we receive a message, output it and respond
+		// with a 'pong!' after waiting for one second.
+		peer.on('message', function(message){
+			console.log(peer.address, ' --> ', message);
+			setTimeout(function(){
+				console.log(peer.address, ' <-- ', 'pong!');
+				peer.send('pong!');
+			}, 1000);
+		});
+	});
+
+	// Get notifications of closed connections
+	p.on('disconnection', function(peer){
+		console.log(peer.address, ' disconnected');
+	});
 &lt;/script&gt;
 </pre>
 
