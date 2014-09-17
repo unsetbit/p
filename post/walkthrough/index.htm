@@ -30,8 +30,8 @@ onramp.on("connection", function(connection){
     // Don't send a connection its own id
     if(other === connection) return;
     
-    connection.send(other.id);
-    other.send(connection.id);
+    connection.send(other.address);
+    other.send(connection.address);
   });
 });  
 </pre>
