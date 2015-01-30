@@ -61,6 +61,8 @@ anyNode.removeListener(eventName, optionalCallback); // stops listening to an ev
 * [Contribute](http://ozan.io/p/#contribute)
 
 ## Release Notes
+* 0.3.3 - Fixed an issue in FF which caused disconnections shorting after successful connections due to a GC miscommunication which seems to clean up DataChannels which are still in use (thereby closing them).
+* 0.3.2 - Updated the library to align it with the latest WebRTC standards -- mainly changes in configuration objects.
 * 0.3.1 - Added 'firewall' option to firewall RTC requests.
 * 0.3 - Major refactor of internals and simplification of API, Firefox support, and respectable unit test coverage.
 * 0.2 - Public release
