@@ -1,7 +1,7 @@
 {
   "name": "p",
   "description": "Peer-to-peer networking with browsers",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "main": "./dist/p.js",
   "ignore": [
     "./test/**",

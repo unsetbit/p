@@ -1,4 +1,5 @@
 <!doctype html><title>Ping</title>
+<script>P_DEBUGGING_ENABLED = false;</script>
 <script src="/p.js"></script>
 <script>
 	var p = P.create();
@@ -37,7 +38,7 @@
 			setTimeout(function(){
 				peer.send('ping?');
 				console.log(peerAddress, ' <-- ping?');
-			}, 1000);
+			}, 3000);
 		});
 	});
 
