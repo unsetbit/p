@@ -1,7 +1,7 @@
 {
   "name": "internet",
   "description": "Framework for creating peer-to-peer browser networks",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "dependencies": {
     "its": "~1.0.2"
   },

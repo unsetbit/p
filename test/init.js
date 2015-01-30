@@ -59,6 +59,6 @@ window.createMockWebSocket = function(){
 window.createMockRtcDataChannel = function(){
 	return {
 		addEventListener: sinon.spy(),
-		send: sinon.spy
+		send: sinon.spy()
 	}
 };

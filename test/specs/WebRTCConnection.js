@@ -52,9 +52,7 @@ describe('WebRTCConnection', function(){
 
 	it('propogates data channel open, error, and close events', function(){
 		rtcConnection.emitter = {emit: sinon.spy()};
-		rtcDataChannel.addEventListener.withArgs('open').firstCall.args[1]();
-		expect(rtcConnection.emitter.emit.calledWith('open')).toBe(true);
-
+		
 		rtcConnection.emitter = {emit: sinon.spy()};
 		rtcDataChannel.addEventListener.withArgs('error').firstCall.args[1]();
 		expect(rtcConnection.emitter.emit.calledWith('error')).toBe(true);

@@ -18,9 +18,9 @@
 		// Whenever we receive a message, output it and respond
 		// with a 'pong!' after waiting for one second.
 		peer.on('message', function(message){
-			console.log(peer.address, ' --> ', message);
+			console.log(peer.address, ' --> ' + message);
 			setTimeout(function(){
-				console.log(peer.address, ' <-- ', 'pong!');
+				console.log(peer.address, ' <-- pong!');
 				peer.send('pong!');
 			}, 1000);
 		});
