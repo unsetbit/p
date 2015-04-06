@@ -1,3 +1,10 @@
+var sinon = require('sinon');
+var util = require('../util');
+
+var WebRTCConnection = util.WebRTCConnection;
+var JSONProtocol = util.JSONProtocol;
+var Connection = util.Connection;
+
 describe('WebRTCConnection', function(){
 	var nativeRTCConnection,
 		connectionManager,
@@ -6,11 +13,11 @@ describe('WebRTCConnection', function(){
 		signalingChannel;
 
 	beforeEach(function(){
-		connectionManager = createMockConnectionManager();
-		nativeRTCConnection = createMockRTCConnection();
+		connectionManager = util.createMockConnectionManager();
+		nativeRTCConnection = util.createMockRTCConnection();
 		rtcDataChannel = nativeRTCConnection.mockRTCDataChannel;
-		signalingChannel = createMockConnection();
-		rtcConnection = new WebRTCConnection("123", connectionManager, nativeRTCConnection, signalingChannel);
+		signalingChannel = util.createMockConnection();
+		rtcConnection = new WebRTCConnection('123', connectionManager, nativeRTCConnection, signalingChannel);
 	});
 
 	it('throws an error when instantiated without required fields', function(){
@@ -28,21 +35,21 @@ describe('WebRTCConnection', function(){
 		}).toThrow();
 
 		expect(function(){
-			new WebRTCConnection("123", undefined, {}, {});
+			new WebRTCConnection('123', undefined, {}, {});
 		}).toThrow();
 
 		expect(function(){
-			new WebRTCConnection("123", {}, undefined, {});
+			new WebRTCConnection('123', {}, undefined, {});
 		}).toThrow();
 
 		expect(function(){
-			new WebRTCConnection("123", {}, {}, undefined);
+			new WebRTCConnection('123', {}, {}, undefined);
 		}).toThrow();
 	});
 
 	it('throws an error if attempting to write to a non-open socket', function(){
 		rtcConnection.rtcDataChannel = {readyState: 'closing'};
-		expect(function(){rtcConnection.writeRaw("123");}).toThrow();
+		expect(function(){rtcConnection.writeRaw('123');}).toThrow();
 	});
 
 	it('returns the rtcDataChannel ready state', function(){
@@ -52,7 +59,7 @@ describe('WebRTCConnection', function(){
 
 	it('propogates data channel open, error, and close events', function(){
 		rtcConnection.emitter = {emit: sinon.spy()};
-		
+
 		rtcConnection.emitter = {emit: sinon.spy()};
 		rtcDataChannel.addEventListener.withArgs('error').firstCall.args[1]();
 		expect(rtcConnection.emitter.emit.calledWith('error')).toBe(true);
@@ -70,7 +77,7 @@ describe('WebRTCConnection', function(){
 
 	it('relays ice candidates through signaling channel', function(){
 		nativeRTCConnection.addEventListener.withArgs('icecandidate').firstCall.args[1]({candidate:123});
-		expect(signalingChannel.writeRelayIceCandidate.calledWith("123", 123)).toBe(true);
+		expect(signalingChannel.writeRelayIceCandidate.calledWith('123', 123)).toBe(true);
 	});
 
 	it('contains all properties of Connection and JSONProtocol', function(){
@@ -79,7 +86,7 @@ describe('WebRTCConnection', function(){
 				expect(property in rtcConnection).toBe(true);
 			}
 		}
-		
+
 
 		for(property in Connection.prototype){
 			if(Connection.prototype.hasOwnProperty(property)){

@@ -1,20 +1,23 @@
+var sinon = require('sinon');
+var util = require('../util');
+
 describe('P', function(){
 	var P,
 		mockEmitter,
 		mockConnectionManager,
 		mockConnection,
-		originalWebSocketCreate = window.WebSocketConnection.create;
+		originalWebSocketCreate = util.WebSocketConnection.create;
 
 	beforeEach(function(){
-		P = window.P;
-		mockEmitter = createMockEmitter();
-		mockConnectionManager = createMockConnectionManager();
-		mockConnection = createMockEmitter();
-		sinon.stub(window.WebSocketConnection, 'create').returns(mockConnection);	
+		P = util.P;
+		mockEmitter = util.createMockEmitter();
+		mockConnectionManager = util.createMockConnectionManager();
+		mockConnection = util.createMockEmitter();
+		sinon.stub(util.WebSocketConnection, 'create').returns(mockConnection);
 	});
 
 	afterEach(function(){
-		window.WebSocketConnection.create = originalWebSocketCreate;
+		util.WebSocketConnection.create = originalWebSocketCreate;
 	});
 
 	describe('construction', function(){
@@ -27,7 +30,7 @@ describe('P', function(){
 		});
 
 		it('constructor throws an error if no emitter is provided', function(){
-			expect(function(){new P()}).toThrow();
+			expect(function(){new P();}).toThrow();
 		});
 
 		it('factory creates a P object and returns the api when called', function(){
@@ -54,7 +57,7 @@ describe('P', function(){
 			var p = new P(mockEmitter, mockConnectionManager);
 
 			var spy = mockConnection.on.withArgs('close');
-			
+
 			p.connect('ws://test/');
 
 			spy.firstCall.args[1]();
@@ -65,18 +68,18 @@ describe('P', function(){
 
 	describe('events', function(){
 		it('emits new connections', function(){
-			var p = new P(mockEmitter, mockConnectionManager);
-			
-			var mockConnection = createMockEmitter();
+			new P(mockEmitter, mockConnectionManager);
+
+			var mockConnection = util.createMockEmitter();
 			mockConnectionManager.onAdd(mockConnection);
-			
+
 			expect(mockEmitter.emit.calledWith('connection', mockConnection)).toBe(true);
 		});
 
 		it('emits disconnections', function(){
-			var p = new P(mockEmitter, mockConnectionManager);
-			
-			var mockConnection = createMockEmitter();
+			new P(mockEmitter, mockConnectionManager);
+
+			var mockConnection = util.createMockEmitter();
 			mockConnectionManager.onRemove(mockConnection);
 
 			expect(mockEmitter.emit.calledWith('disconnection', mockConnection)).toBe(true);

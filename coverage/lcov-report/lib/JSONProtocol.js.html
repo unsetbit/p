@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for lib/JSONProtocol.js</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../prettify.css">
+    <link rel="stylesheet" href="../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header high">
+    <h1>Code coverage report for <span class="entity">lib/JSONProtocol.js</span></h1>
+    <h2>
+        Statements: <span class="metric">89.29% <small>(50 / 56)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">91.67% <small>(11 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">61.54% <small>(8 / 13)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">89.29% <small>(50 / 56)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">lib/</a> &#187; JSONProtocol.js</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">7</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">7</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span></td><td class="text"><pre class="prettyprint lang-js">function notImplemented(){
+	throw new Error('This method is not implemented');
+}
+&nbsp;
+function JSONProtocol(){}
+&nbsp;
+JSONProtocol.prototype.PROTOCOL_NAME = 'p';
+&nbsp;
+JSONProtocol.prototype.MESSAGE_TYPE = {
+	DIRECT: 0, // [0, message]
+&nbsp;
+	RTC_OFFER: 3, // [3, description, data]
+	RTC_ANSWER: 4, // [4, description]
+	RTC_ICE_CANDIDATE: 5, // [5, candidate]
+&nbsp;
+	RELAY: 6, // [6, address, message]
+	RELAYED: 7 // [7, address, message]
+};
+&nbsp;
+JSONProtocol.prototype.readRaw = function(message){
+	if(message instanceof ArrayBuffer){
+		this.readArrayBuffer(message);
+	} else {
+		this.readProtocolMessage(JSON.parse(message));
+	}	
+};
+&nbsp;
+JSONProtocol.prototype.readProtocolMessage = function(message){
+	var MESSAGE_TYPE = this.MESSAGE_TYPE,
+		messageType = message[0];
+	
+	switch(messageType){
+		// This is a message from the remote node to this one.
+		case MESSAGE_TYPE.DIRECT:
+			this.readMessage(message[1]);
+			break;
+&nbsp;
+		// The message was relayed by the peer on behalf of
+		// a third party peer, identified by "thirdPartyPeerId".
+		// This means that the peer is acting as a signalling
+		// channel on behalf of the third party peer.
+		case MESSAGE_TYPE.RELAYED:
+			this.readRelayedMessage(message[1], message[2]);
+			break;
+&nbsp;
+		// The message is intended for another peer, identified
+		// by "peerId", which is also connected to this node.
+		// This means that the peer is using this connection
+		// as a signalling channel in order to establish a connection
+		// to the other peer identified "peerId".
+		case MESSAGE_TYPE.RELAY:
+			this.readRelay(message[1], message[2]);
+			break;
+&nbsp;
+		default:
+			throw new Error('Unknown message type: ' + messageType);
+	}
+};
+&nbsp;
+JSONProtocol.prototype.readRelayedMessage = function(origin, message){
+	var MESSAGE_TYPE = this.MESSAGE_TYPE,
+		messageType = message[0];
+&nbsp;
+	switch(messageType){
+		// An initial connection request from a third party peer
+		case MESSAGE_TYPE.RTC_OFFER:
+			this.readRelayedOffer(origin, message[1], message[2]);
+			break;
+		
+		// An answer to an RTC offer sent from this node
+		case MESSAGE_TYPE.RTC_ANSWER:
+			this.readRelayedAnswer(origin, message[1]);
+			break;
+		
+		// An ICE candidate from the source node
+		case MESSAGE_TYPE.RTC_ICE_CANDIDATE:
+			this.readRelayedIceCandidate(origin, message[1]);
+			break;
+&nbsp;
+<span class="branch-3 cbranch-no" title="branch not covered" >		default:</span>
+<span class="cstat-no" title="statement not covered" >			throw new Error('Unknown message type: ' + messageType);</span>
+	}		
+};
+&nbsp;
+JSONProtocol.prototype.readMessage = notImplemented;
+JSONProtocol.prototype.readArrayBuffer = notImplemented;
+JSONProtocol.prototype.readRelay = notImplemented;
+&nbsp;
+JSONProtocol.prototype.readRelayedOffer = notImplemented;
+JSONProtocol.prototype.readRelayedAnswer = notImplemented;
+JSONProtocol.prototype.readRelayedIceCandidate = notImplemented;
+&nbsp;
+JSONProtocol.prototype.writeRaw = notImplemented;
+&nbsp;
+JSONProtocol.prototype.writeProtocolMessage = function(message){
+	var serializedMessage = JSON.stringify(message);
+	this.writeRaw(serializedMessage);
+};
+&nbsp;
+JSONProtocol.prototype.writeMessage = function(message){
+	if(message instanceof ArrayBuffer){
+		this.writeRaw(message);
+	} else {
+		this.writeStringMessage(message);
+	}
+};
+&nbsp;
+JSONProtocol.prototype.writeStringMessage = function(message){
+	this.writeProtocolMessage([
+		this.MESSAGE_TYPE.DIRECT,
+		message
+	]);
+};
+&nbsp;
+JSONProtocol.prototype.writeRelayedMessage = <span class="fstat-no" title="function not covered" >function(origin, message){</span>
+<span class="cstat-no" title="statement not covered" >	this.writeProtocolMessage([</span>
+		this.MESSAGE_TYPE.RELAYED,
+		origin,
+		message
+	]);
+};
+&nbsp;
+JSONProtocol.prototype.writeRelayMessage = <span class="fstat-no" title="function not covered" >function(destination, message){</span>
+<span class="cstat-no" title="statement not covered" >	this.writeProtocolMessage([</span>
+		this.MESSAGE_TYPE.RELAY,
+		destination,
+		message
+	]);
+};
+&nbsp;
+JSONProtocol.prototype.writeRelayAnswer = <span class="fstat-no" title="function not covered" >function(destination, description){</span>
+<span class="cstat-no" title="statement not covered" >	this.writeRelayMessage(destination, [</span>
+		this.MESSAGE_TYPE.RTC_ANSWER,
+		description
+	]);
+};
+&nbsp;
+JSONProtocol.prototype.writeRelayIceCandidate = <span class="fstat-no" title="function not covered" >function(destination, candidate){</span>
+<span class="cstat-no" title="statement not covered" >	this.writeRelayMessage(destination, [</span>
+		this.MESSAGE_TYPE.RTC_ICE_CANDIDATE,
+		candidate
+	]);
+};
+&nbsp;
+JSONProtocol.prototype.writeRelayOffer = <span class="fstat-no" title="function not covered" >function(destination, description, data){</span>
+<span class="cstat-no" title="statement not covered" >	this.writeRelayMessage(destination, [</span>
+		this.MESSAGE_TYPE.RTC_OFFER,
+		description,
+		data
+	]);
+};
+&nbsp;
+module.exports = JSONProtocol;</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Apr 05 2015 23:06:51 GMT-0700 (PDT)</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

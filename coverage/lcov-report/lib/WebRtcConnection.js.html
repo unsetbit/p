@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for lib/WebRtcConnection.js</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../prettify.css">
+    <link rel="stylesheet" href="../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header low">
+    <h1>Code coverage report for <span class="entity">lib/WebRtcConnection.js</span></h1>
+    <h2>
+        Statements: <span class="metric">25.88% <small>(22 / 85)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">32.14% <small>(9 / 28)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">0% <small>(0 / 25)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">26.83% <small>(22 / 82)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">lib/</a> &#187; WebRtcConnection.js</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/*global
+		RTCPeerConnection,
+		webkitRTCPeerConnection,
+		mozRTCPeerConnection,
+		RTCSessionDescription,
+		mozRTCSessionDescription,
+		RTCIceCandidate,
+		mozRTCIceCandidate
+*/
+&nbsp;
+var Connection = require('./Connection.js'),
+	its = require('its');
+&nbsp;
+var nativeRTCPeerConnection = (typeof RTCPeerConnection !== 'undefined')? <span class="branch-0 cbranch-no" title="branch not covered" >RTCPeerConnection </span>:
+							  (typeof webkitRTCPeerConnection !== 'undefined')? <span class="branch-0 cbranch-no" title="branch not covered" >webkitRTCPeerConnection </span>:
+							  (typeof mozRTCPeerConnection !== 'undefined')? <span class="branch-0 cbranch-no" title="branch not covered" >mozRTCPeerConnection </span>:
+							  undefined;
+&nbsp;
+var nativeRTCSessionDescription = (typeof RTCSessionDescription !== 'undefined')? <span class="branch-0 cbranch-no" title="branch not covered" >RTCSessionDescription </span>:
+								  (typeof mozRTCSessionDescription !== 'undefined')? <span class="branch-0 cbranch-no" title="branch not covered" >mozRTCSessionDescription </span>:
+								  undefined;
+var nativeRTCIceCandidate = (typeof RTCIceCandidate !== 'undefined')? <span class="branch-0 cbranch-no" title="branch not covered" >RTCIceCandidate </span>:
+							(typeof mozRTCIceCandidate !== 'undefined')? <span class="branch-0 cbranch-no" title="branch not covered" >mozRTCIceCandidate </span>:
+							undefined;
+&nbsp;
+var log = <span class="fstat-no" title="function not covered" >function(){</span>};
+&nbsp;
+<span class="missing-if-branch" title="if path not taken" >I</span>if(typeof window !== 'undefined' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >window.P_DEBUGGING_ENABLED)</span>{
+<span class="cstat-no" title="statement not covered" >	log = <span class="fstat-no" title="function not covered" >function(label, event, obj){</span></span>
+<span class="cstat-no" title="statement not covered" >		window.console.debug(label, event, obj);</span>
+	};
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >function WebRTCConnection(address, peers, rtcConnection, signalingChannel, options){</span>
+<span class="cstat-no" title="statement not covered" >	var self = this;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	its.string(address);</span>
+<span class="cstat-no" title="statement not covered" >	its.defined(peers);</span>
+<span class="cstat-no" title="statement not covered" >	its.defined(rtcConnection);</span>
+<span class="cstat-no" title="statement not covered" >	its.defined(signalingChannel);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	Connection.call(this, address, peers, options);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	this.signalingChannel = signalingChannel;</span>
+<span class="cstat-no" title="statement not covered" >	this.rtcConnection = rtcConnection;</span>
+<span class="cstat-no" title="statement not covered" >	this.rtcDataChannel = rtcConnection.createDataChannel(this.PROTOCOL_NAME, {protocol: this.PROTOCOL_NAME});</span>
+&nbsp;
+&nbsp;
+	// Bug in FF seems to garbage collect the stale ref causing it to close
+	// the prevents it from being lost in a GC event
+<span class="cstat-no" title="statement not covered" >	this._initialRtcDataChannel = this.rtcDataChannel;</span>
+&nbsp;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	this.close = rtcConnection.close.bind(rtcConnection);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	this.rtcConnection.addEventListener('icecandidate', <span class="fstat-no" title="function not covered" >function(event){</span></span>
+<span class="cstat-no" title="statement not covered" >		if(!event.candidate) <span class="cstat-no" title="statement not covered" >return;</span></span>
+<span class="cstat-no" title="statement not covered" >		log('ice candidate', event, self);</span>
+<span class="cstat-no" title="statement not covered" >		self.signalingChannel.writeRelayIceCandidate(address, event.candidate);</span>
+	});
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	this.rtcConnection.addEventListener('datachannel', <span class="fstat-no" title="function not covered" >function(event){</span></span>
+<span class="cstat-no" title="statement not covered" >		log('datachannel', event, self);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		var rtcDataChannel = self.rtcDataChannel = event.channel;</span>
+<span class="cstat-no" title="statement not covered" >		rtcDataChannel.addEventListener('open', <span class="fstat-no" title="function not covered" >function(event){</span></span>
+<span class="cstat-no" title="statement not covered" >			log('remote datachannel open', event, self);</span>
+<span class="cstat-no" title="statement not covered" >			self.emitter.emit('open', event);</span>
+		});
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		rtcDataChannel.addEventListener('close', <span class="fstat-no" title="function not covered" >function(event){</span></span>
+<span class="cstat-no" title="statement not covered" >			log('remote datachannel close', event, self);</span>
+<span class="cstat-no" title="statement not covered" >			self.emitter.emit('close', event);</span>
+		});
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		rtcDataChannel.addEventListener('error', <span class="fstat-no" title="function not covered" >function(event){</span></span>
+<span class="cstat-no" title="statement not covered" >			log('remote datachannel error', event, self);</span>
+<span class="cstat-no" title="statement not covered" >			self.emitter.emit('error', event);</span>
+		});
+	});
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	this.rtcDataChannel.addEventListener('message', <span class="fstat-no" title="function not covered" >function(message){</span></span>
+<span class="cstat-no" title="statement not covered" >		log('local datachannel message', message, self);</span>
+<span class="cstat-no" title="statement not covered" >		self.readRaw(message.data);</span>
+	});
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	this.rtcDataChannel.addEventListener('error', <span class="fstat-no" title="function not covered" >function(event){</span></span>
+<span class="cstat-no" title="statement not covered" >		log('local datachannel error', event, self);</span>
+<span class="cstat-no" title="statement not covered" >		self.emitter.emit('error', event);</span>
+	});
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	this.rtcDataChannel.addEventListener('close', <span class="fstat-no" title="function not covered" >function(event){</span></span>
+<span class="cstat-no" title="statement not covered" >		log('local datachannel close', event, self);</span>
+<span class="cstat-no" title="statement not covered" >		self.emitter.emit('close', event);</span>
+	});
+}
+&nbsp;
+var DEFAULT_RTC_CONFIGURATION = null;
+var DEFAULT_RTC_OFFER_OPTIONS = {
+	offerToReceiveAudio: false,
+	offerToReceiveVideo: false,
+	iceRestart: false
+};
+&nbsp;
+//DEFAULT_RTC_OFFER_OPTIONS
+WebRTCConnection.create = <span class="fstat-no" title="function not covered" >function(config, peers, signalingChannel, options){</span>
+<span class="cstat-no" title="statement not covered" >	var rtcConfiguration = config.rtcConfiguration || DEFAULT_RTC_CONFIGURATION,</span>
+		rtcConnection = new nativeRTCPeerConnection(rtcConfiguration);
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	return new WebRTCConnection(config.address, peers, rtcConnection, signalingChannel, options);</span>
+};
+&nbsp;
+WebRTCConnection.prototype = Object.create(Connection.prototype);
+&nbsp;
+WebRTCConnection.prototype.writeRaw = <span class="fstat-no" title="function not covered" >function(message){</span>
+<span class="cstat-no" title="statement not covered" >	switch(this.rtcDataChannel.readyState){</span>
+		case 'connecting':
+<span class="cstat-no" title="statement not covered" >			throw new Error('Can\'t send a message while RTCDataChannel connecting');</span>
+		case 'open':
+<span class="cstat-no" title="statement not covered" >			this.rtcDataChannel.send(message);</span>
+<span class="cstat-no" title="statement not covered" >			log('sent message to remote', message, this);</span>
+<span class="cstat-no" title="statement not covered" >			break;</span>
+		case 'closing':
+		case 'closed':
+<span class="cstat-no" title="statement not covered" >			throw new Error('Can\'t send a message while RTCDataChannel is closing or closed');</span>
+	}
+};
+&nbsp;
+WebRTCConnection.prototype.readAnswer = <span class="fstat-no" title="function not covered" >function(description){</span>
+<span class="cstat-no" title="statement not covered" >	var rtcSessionDescription = new nativeRTCSessionDescription(description);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	this.rtcConnection.setRemoteDescription(rtcSessionDescription);</span>
+};
+&nbsp;
+WebRTCConnection.prototype.readOffer = <span class="fstat-no" title="function not covered" >function(description){</span>
+<span class="cstat-no" title="statement not covered" >	var rtcSessionDescription = new nativeRTCSessionDescription(description);</span>
+<span class="cstat-no" title="statement not covered" >	this.rtcConnection.setRemoteDescription(rtcSessionDescription);</span>
+};
+&nbsp;
+WebRTCConnection.prototype.readIceCandidate = <span class="fstat-no" title="function not covered" >function(candidate){</span>
+<span class="cstat-no" title="statement not covered" >	this.rtcConnection.addIceCandidate(new nativeRTCIceCandidate(candidate));</span>
+};
+&nbsp;
+WebRTCConnection.prototype.writeAnswer = <span class="fstat-no" title="function not covered" >function(){</span>
+<span class="cstat-no" title="statement not covered" >	var emitter = this.emitter,</span>
+		address = this.address,
+		rtcConnection = this.rtcConnection,
+		signalingChannel = this.signalingChannel;
+&nbsp;
+<span class="fstat-no" title="function not covered" >	function onError(err){</span> <span class="cstat-no" title="statement not covered" >emitter.emit('error', err); </span>}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	rtcConnection.createAnswer(<span class="fstat-no" title="function not covered" >function(description){</span></span>
+<span class="cstat-no" title="statement not covered" >		rtcConnection.setLocalDescription(description, <span class="fstat-no" title="function not covered" >function(){</span></span>
+<span class="cstat-no" title="statement not covered" >			signalingChannel.writeRelayAnswer(address, description);</span>
+		}, onError);
+	}, onError);
+};
+&nbsp;
+WebRTCConnection.prototype.writeOffer = <span class="fstat-no" title="function not covered" >function(config){</span>
+<span class="cstat-no" title="statement not covered" >	var emitter = this.emitter,</span>
+		address = this.address,
+		rtcConnection = this.rtcConnection,
+		signalingChannel = this.signalingChannel;
+&nbsp;
+<span class="fstat-no" title="function not covered" >	function onError(err){</span> <span class="cstat-no" title="statement not covered" >emitter.emit('error', err); </span>}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	rtcConnection.createOffer(<span class="fstat-no" title="function not covered" >function(description){</span></span>
+<span class="cstat-no" title="statement not covered" >		rtcConnection.setLocalDescription(description, <span class="fstat-no" title="function not covered" >function(){</span></span>
+<span class="cstat-no" title="statement not covered" >			signalingChannel.writeRelayOffer(address, description, config.offerData);</span>
+		}, onError);
+	}, onError, config.rtcOfferOptions || DEFAULT_RTC_OFFER_OPTIONS);
+};
+&nbsp;
+WebRTCConnection.prototype.getReadyState = <span class="fstat-no" title="function not covered" >function(){</span>
+<span class="cstat-no" title="statement not covered" >	return this.rtcDataChannel.readyState;</span>
+};
+&nbsp;
+// Solves the circular dependency with Connection.js
+Connection.createWebRTCConnection = WebRTCConnection.create;
+&nbsp;
+module.exports = WebRTCConnection;
+&nbsp;</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Apr 05 2015 23:06:51 GMT-0700 (PDT)</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

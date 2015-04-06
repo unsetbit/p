@@ -1,3 +1,16 @@
+var sinon = require('sinon');
+
+var util = require('../util');
+var WebSocketConnection = util.WebSocketConnection;
+var JSONProtocol = util.JSONProtocol;
+var Connection = util.Connection;
+
+var MockWebSocket = {
+	CLOSED: 3,
+	CLOSING: 2,
+	OPEN: 1
+};
+
 describe('WebSocketConnection', function(){
 	var nativeWebSocket,
 		connectionManager,
@@ -5,10 +18,10 @@ describe('WebSocketConnection', function(){
 		signalingChannel;
 
 	beforeEach(function(){
-		connectionManager = createMockConnectionManager();
-		nativeWebSocket = createMockWebSocket();
-		signalingChannel = createMockConnection();
-		connection = new WebSocketConnection("123", connectionManager, nativeWebSocket);
+		connectionManager = util.createMockConnectionManager();
+		nativeWebSocket = util.createMockWebSocket();
+		signalingChannel = util.createMockConnection();
+		connection = new WebSocketConnection('123', connectionManager, nativeWebSocket);
 	});
 
 	it('throws an error when instantiated without required fields', function(){
@@ -26,21 +39,21 @@ describe('WebSocketConnection', function(){
 		}).toThrow();
 
 		expect(function(){
-			new WebSocketConnection("123", undefined, {});
+			new WebSocketConnection('123', undefined, {});
 		}).toThrow();
 
 		expect(function(){
-			new WebSocketConnection("123", {}, undefined);
+			new WebSocketConnection('123', {}, undefined);
 		}).toThrow();
 	});
 
 	it('throws an error if attempting to write to a non-open socket', function(){
-		connection.webSocket.readyState = WebSocket.CLOSED;
-		expect(function(){connection.writeRaw("123");}).toThrow();
+		connection.webSocket.readyState = MockWebSocket.CLOSED;
+		expect(function(){connection.writeRaw('123');}).toThrow();
 	});
 
 	it('returns the websocket ready state as webrtc-like ready state', function(){
-		connection.webSocket.readyState = WebSocket.CLOSING;
+		connection.webSocket.readyState = MockWebSocket.CLOSING;
 		expect(connection.getReadyState()).toBe('closing');
 	});
 
@@ -65,7 +78,7 @@ describe('WebSocketConnection', function(){
 	});
 
 	it('writes messages to the data channel', function(){
-		nativeWebSocket.readyState = WebSocket.OPEN;
+		nativeWebSocket.readyState = MockWebSocket.OPEN;
 		connection.writeRaw('abc');
 		expect(nativeWebSocket.send.calledWith('abc')).toBe(true);
 	});
@@ -76,7 +89,7 @@ describe('WebSocketConnection', function(){
 				expect(property in connection).toBe(true);
 			}
 		}
-		
+
 		for(property in Connection.prototype){
 			if(Connection.prototype.hasOwnProperty(property)){
 				expect(property in connection).toBe(true);

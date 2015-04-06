@@ -1,9 +1,12 @@
+var sinon = require('sinon');
+var util = require('../util');
+
 describe('ConnectionManager', function(){
 	var connectionManager,
 		mockConnection;
 
 	beforeEach(function(){
-		connectionManager = new window.ConnectionManager();
+		connectionManager = new util.ConnectionManager();
 		mockConnection = {address: '123'};
 	});
 
@@ -16,7 +19,7 @@ describe('ConnectionManager', function(){
 	it('can keep track of connections by address', function(){
 		expect(connectionManager.get().length).toBe(0);
 		var result = connectionManager.add(mockConnection);
-		
+
 		expect(result).toBe(true);
 		expect(connectionManager.get().length).toBe(1);
 		expect(connectionManager.get('123')).toBe(mockConnection);
@@ -27,11 +30,11 @@ describe('ConnectionManager', function(){
 		var result = connectionManager.add(mockConnection);
 		expect(result).toBe(true);
 		expect(connectionManager.get().length).toBe(1);
-		
+
 		result = connectionManager.add(mockConnection);
 		expect(result).toBe(false);
 		expect(connectionManager.get().length).toBe(1);
-		
+
 		result = connectionManager.add({address: '123'});
 		expect(result).toBe(false);
 		expect(connectionManager.get().length).toBe(1);

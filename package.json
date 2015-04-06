@@ -6,19 +6,9 @@
     "its": "~1.0.2"
   },
   "devDependencies": {
-    "grunt": "~0.4.0",
-    "grunt-hug": "~0.5.0",
-    "grunt-contrib-copy": "~0.4.0",
-    "grunt-contrib-clean": "~0.4.0",
-    "grunt-contrib-concat": "~0.2.0",
-    "grunt-contrib-jshint": "~0.4.0",
-    "grunt-contrib-watch": "~0.3.1",
-    "grunt-contrib-uglify": "~0.2.0",
-    "grunt-contrib-livereload": "0.1.2",
-    "grunt-contrib-connect": "~0.3.0",
-    "grunt-contrib-jasmine": "~0.5.0",
-    "browserify": "~2.35.4",
-    "grunt-browserify": "~1.2.11",
+    "boilerplate-gulp-js": "^1.0.0",
+    "gulp": "gulpjs/gulp.git#4.0",
+    "gulp-connect": "^2.2.0",
     "sinon": "~1.7.3"
   },
   "main": "./index.js",
@@ -26,11 +16,7 @@
   "engines": {
     "node": "*"
   },
-  "scripts": {
-    "prepublish": "grunt test release",
-    "test": "grunt test",
-    "start": "grunt dev"
-  },
+  "scripts": {},
   "keywords": [
     "peer-to-peer",
     "websockets",

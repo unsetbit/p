@@ -1,10 +1,15 @@
+var sinon = require('sinon');
+var util = require('../util');
+
+var JSONProtocol = util.JSONProtocol;
+
 describe('JSONProtocol', function(){
 	var protocol;
 
 	beforeEach(function(){
 		protocol = new JSONProtocol();
 	});
-	
+
 	it('throws an error when unimplemented methods are called', function(){
 		expect(function(){
 			protocol.readMessage();
@@ -78,7 +83,7 @@ describe('JSONProtocol', function(){
 	it('routes relayed answers to readRelayedAnswer', function(){
 		var answer = [protocol.MESSAGE_TYPE.RTC_ANSWER, 'description'],
 			relayedAnswer = [protocol.MESSAGE_TYPE.RELAYED, '123', answer];
-			
+
 		protocol.readRelayedAnswer = sinon.spy();
 		protocol.readProtocolMessage(relayedAnswer);
 		expect(protocol.readRelayedAnswer.calledWith('123', 'description')).toBe(true);
@@ -87,7 +92,7 @@ describe('JSONProtocol', function(){
 	it('routes relayed ice candidates to readRelayedIceCandidate', function(){
 		var iceCandidate = [protocol.MESSAGE_TYPE.RTC_ICE_CANDIDATE, 'description'],
 			relayedIceCandidate = [protocol.MESSAGE_TYPE.RELAYED, '123', iceCandidate];
-			
+
 		protocol.readRelayedIceCandidate = sinon.spy();
 		protocol.readProtocolMessage(relayedIceCandidate);
 		expect(protocol.readRelayedIceCandidate.calledWith('123', 'description')).toBe(true);
