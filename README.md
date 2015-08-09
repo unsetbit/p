@@ -1,4 +1,4 @@
-# <a href="http://ozan.io/p">P</a> is for peer-to-peer networking with browsers
+# <a href="http://unsetbit.com/p">P</a> is for peer-to-peer networking with browsers
 
 P is a small framework used to create browser-to-browser networks (as opposed to just a connection). With P, you can:
 
@@ -55,10 +55,10 @@ anyNode.removeListener(eventName, optionalCallback); // stops listening to an ev
 
 
 ## Documentation
-* [Example with walkthrough](http://ozan.io/p/#walkthrough)
-* [API](http://ozan.io/p/#use)
-* [Cookbook](http://ozan.io/p/#cookbook)
-* [Contribute](http://ozan.io/p/#contribute)
+* [Example with walkthrough](http://unsetbit.com/p/#walkthrough)
+* [API](http://unsetbit.com/p/#use)
+* [Cookbook](http://unsetbit.com/p/#cookbook)
+* [Contribute](http://unsetbit.com/p/#contribute)
 
 ## Release Notes
 * 0.3.3 - Fixed an issue in FF which caused disconnections shorting after successful connections due to a GC miscommunication which seems to clean up DataChannels which are still in use (thereby closing them).
