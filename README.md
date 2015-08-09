@@ -2,7 +2,7 @@
 
 P is a small framework used to create browser-to-browser networks (as opposed to just a connection). With P, you can:
 
-* Connect to other browsers using [a simple WebSocket server](https://github.com/oztu/onramp).
+* Connect to other browsers using [a simple WebSocket server](https://github.com/unsetbit/onramp).
 * Connect to other browsers using your established connections to other browsers. This is what makes P unique: it allows for transitive connections across peers, allowing easy creation of mesh networks.
 
 After a connection is established the middleman is no longer necessary – no proxies are involved.
@@ -10,7 +10,7 @@ After a connection is established the middleman is no longer necessary – no pr
 This is made possible by an unstable and young technology -- [WebRTC](http://www.webrtc.org/).
 Currently, only Chrome and Firefox support this technology.
 
-[onramp](https://github.com/oztu/onramp), a simple WebSocket server, is used as the signaling channel
+[onramp](https://github.com/unsetbit/onramp), a simple WebSocket server, is used as the signaling channel
 to establish initial connections.
 
 ## API
